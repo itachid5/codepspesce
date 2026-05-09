@@ -1,0 +1,64 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "Blog Website" [ref=e3] [cursor=pointer]:
+      - /url: /
+    - navigation [ref=e4]:
+      - link "Home" [ref=e5] [cursor=pointer]:
+        - /url: /
+      - link "About" [ref=e6] [cursor=pointer]:
+        - /url: /about
+      - link "Contact" [ref=e7] [cursor=pointer]:
+        - /url: /contact
+      - link "Privacy" [ref=e8] [cursor=pointer]:
+        - /url: /privacy
+      - link "Terms" [ref=e9] [cursor=pointer]:
+        - /url: /terms
+      - link "Admin Login" [ref=e10] [cursor=pointer]:
+        - /url: /admin/login
+    - generic [ref=e11]:
+      - textbox "Search posts" [ref=e12]
+      - button "Search" [ref=e13]
+  - complementary [ref=e14]:
+    - button "Close" [ref=e15]
+    - link "Home" [ref=e16] [cursor=pointer]:
+      - /url: /
+    - link "About" [ref=e17] [cursor=pointer]:
+      - /url: /about
+    - link "Contact" [ref=e18] [cursor=pointer]:
+      - /url: /contact
+    - link "Privacy" [ref=e19] [cursor=pointer]:
+      - /url: /privacy
+    - link "Terms" [ref=e20] [cursor=pointer]:
+      - /url: /terms
+    - link "Admin Login" [ref=e21] [cursor=pointer]:
+      - /url: /admin/login
+    - heading "Categories" [level=3] [ref=e22]
+    - link "Browser Category" [ref=e23] [cursor=pointer]:
+      - /url: /category/browser-category
+    - link "Media API Category 1108" [ref=e24] [cursor=pointer]:
+      - /url: /category/media-api-category-1108
+    - link "Media API Test Category 17783254" [ref=e25] [cursor=pointer]:
+      - /url: /category/media-api-test-category-17783254
+    - link "Python 20794c79" [ref=e26] [cursor=pointer]:
+      - /url: /category/python-20794c79
+    - link "Python 4d920560" [ref=e27] [cursor=pointer]:
+      - /url: /category/python-4d920560
+    - link "Python 6341aab5" [ref=e28] [cursor=pointer]:
+      - /url: /category/python-6341aab5
+    - link "Python 69cec7ad" [ref=e29] [cursor=pointer]:
+      - /url: /category/python-69cec7ad
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - heading "Search" [level=1] [ref=e32]
+      - generic [ref=e33]:
+        - textbox "Search posts" [ref=e34]: "17783254"
+        - button "Search" [ref=e35]
+      - paragraph [ref=e36]: 1 result(s) for “17783254”.
+    - article [ref=e38]:
+      - heading "Media API Upload Test 17783254" [level=3] [ref=e39]:
+        - link "Media API Upload Test 17783254" [ref=e40] [cursor=pointer]:
+          - /url: /post/media-api-upload-test-17783254
+      - paragraph [ref=e41]: Testing the new media API upload flow with a real featured image.
+  - contentinfo [ref=e42]:
+    - paragraph [ref=e43]: Updated from tests
+    - paragraph [ref=e44]: © Blog Website

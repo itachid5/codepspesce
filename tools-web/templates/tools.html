@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero compact reveal">
+  <p class="kicker">Tools directory</p>
+  <h1>Pick a tool and get moving.</h1>
+  <p>Search by name or filter by category. These pages are ready for real backend tool logic when you add each service.</p>
+</section>
+
+<section class="directory-layout reveal">
+  <aside class="filter-panel">
+    <label for="tool-search">Search tools</label>
+    <input id="tool-search" class="search-input" type="search" placeholder="Facebook, AI, text..." autocomplete="off">
+    <div class="category-filter" aria-label="Tool categories">
+      <a class="filter-chip {{ 'active' if active_category == 'all' else '' }}" href="{{ url_for('tools_index') }}">All</a>
+      {% for category in categories %}
+        <a class="filter-chip {{ 'active' if active_category == category.slug else '' }}" href="{{ url_for('tools_index', category=category.slug) }}">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <div class="directory-grid" data-tool-list>
+    {% for tool in visible_tools %}
+      <article class="tool-card tool-result" data-tool-name="{{ tool.name|lower }} {{ tool.description|lower }} {{ category_for(tool).name|lower }}">
+        <span class="pill">{{ category_for(tool).name }}</span>
+        <h2>{{ tool.name }}</h2>
+        <p>{{ tool.description }}</p>
+        <ul>
+          {% for feature in tool.features[:2] %}
+            <li>{{ feature }}</li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('tool_detail', slug=tool.slug) }}">Launch page</a>
+      </article>
+    {% else %}
+      <div class="empty-state">No tools found for this category yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

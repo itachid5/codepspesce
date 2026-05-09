@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="tool-detail-hero reveal">
+  <div>
+    <p class="kicker">{{ tool_category.name }}</p>
+    <h1>{{ tool.name }}</h1>
+    <p>{{ tool.long_description }}</p>
+  </div>
+  <span class="status-badge">{{ tool.status }}</span>
+</section>
+
+<section class="tool-workbench reveal">
+  <form class="tool-form" method="post">
+    <label for="tool_input">Paste your link or text</label>
+    <div class="input-row">
+      <input id="tool_input" name="tool_input" type="text" placeholder="{{ tool.placeholder }}" value="{{ submitted_url or '' }}">
+      <button class="button button-primary" type="submit">{{ tool.button }}</button>
+    </div>
+    <p class="form-note">This page is connected to the frontend. Backend processing can be added next for real downloads or AI output.</p>
+  </form>
+
+  {% if submitted_url %}
+    <div class="result-panel">
+      <p class="kicker">Demo response</p>
+      <h2>Input received</h2>
+      <p class="submitted-url">{{ submitted_url }}</p>
+      <p>The result area is ready for thumbnails, download buttons, AI text, or generated files.</p>
+    </div>
+  {% endif %}
+</section>
+
+<section class="feature-list reveal">
+  <div class="section-heading">
+    <p class="kicker">What this page includes</p>
+    <h2>Prepared for the real tool backend.</h2>
+  </div>
+  <div class="feature-grid">
+    {% for feature in tool.features %}
+      <div class="feature-tile">
+        <span>{{ loop.index|string|zfill(2) }}</span>
+        <p>{{ feature }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

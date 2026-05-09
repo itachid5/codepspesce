@@ -23,7 +23,8 @@ async def upload_featured_image(file: UploadFile | None) -> str:
     except httpx.HTTPError as exc:
         raise MediaUploadError("Media upload service is unavailable. Please try again later.") from exc
     payload = response.json()
-    secure_url = payload.get("secure_url")
+    data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+    secure_url = payload.get("secure_url") or data.get("secure_url")
     if not secure_url:
         raise MediaUploadError("Media upload service returned no image URL.")
     return secure_url

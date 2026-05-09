@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero reveal">
+  <p class="kicker">Contact</p>
+  <h1>Request a tool or ask for a custom workflow.</h1>
+  <p>Use this page as the public contact destination. Connect it later to email, a database, or a support form service.</p>
+</section>
+
+<section class="contact-panel reveal">
+  <form class="contact-form">
+    <label for="name">Name</label>
+    <input id="name" type="text" placeholder="Your name">
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="you@example.com">
+    <label for="message">Message</label>
+    <textarea id="message" rows="6" placeholder="Tell us what tool you need..."></textarea>
+    <button class="button button-primary" type="button">Demo form</button>
+  </form>
+  <aside>
+    <p class="kicker">Good requests include</p>
+    <ul class="check-list">
+      <li>The platform or service you want supported</li>
+      <li>Input and output examples</li>
+      <li>Whether it should be AI-powered or utility-only</li>
+    </ul>
+  </aside>
+</section>
+{% endblock %}

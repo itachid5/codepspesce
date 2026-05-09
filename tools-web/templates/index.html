@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-grid">
+  <div class="hero-copy reveal">
+    <p class="kicker">Built for the useful internet</p>
+    <h1>Download, convert, write, and clean up your digital work from one sharp toolbox.</h1>
+    <p class="hero-lede">ToolForge is a Python-powered tools website ready for Render, with social video pages, AI workflows, and daily utility tools prepared in one polished interface.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="{{ url_for('tools_index') }}">Explore tools</a>
+      <a class="button button-ghost" href="{{ url_for('tools_index', category='social-downloaders') }}">Social downloaders</a>
+    </div>
+  </div>
+  <div class="hero-console reveal reveal-delay">
+    <div class="console-topline">
+      <span></span><span></span><span></span>
+      <strong>tool queue</strong>
+    </div>
+    {% for tool in featured_tools %}
+      <a class="console-row" href="{{ url_for('tool_detail', slug=tool.slug) }}">
+        <span>{{ loop.index|string|zfill(2) }}</span>
+        <strong>{{ tool.name }}</strong>
+        <em>{{ tool.status }}</em>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section-panel reveal">
+  <div class="section-heading">
+    <p class="kicker">Tool categories</p>
+    <h2>Organized like a control room, not a cluttered link farm.</h2>
+  </div>
+  <div class="category-grid">
+    {% for category in categories %}
+      <a class="category-card accent-{{ category.accent }}" href="{{ url_for('tools_index', category=category.slug) }}">
+        <span>{{ category.eyebrow }}</span>
+        <h3>{{ category.name }}</h3>
+        <p>{{ category.description }}</p>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="tool-strip reveal">
+  <div>
+    <p class="kicker">Featured tools</p>
+    <h2>Start with the pages your visitors expect first.</h2>
+  </div>
+  <div class="tool-card-grid">
+    {% for tool in featured_tools %}
+      <article class="tool-card">
+        <span class="pill">{{ tool.label }}</span>
+        <h3>{{ tool.name }}</h3>
+        <p>{{ tool.description }}</p>
+        <a href="{{ url_for('tool_detail', slug=tool.slug) }}">Open tool</a>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cta-band reveal">
+  <p class="kicker">Render ready</p>
+  <h2>A Python site with no build step and clean deployment settings.</h2>
+  <a class="button button-primary" href="{{ url_for('about') }}">See how it works</a>
+</section>
+{% endblock %}

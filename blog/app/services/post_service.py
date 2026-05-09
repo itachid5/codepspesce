@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import re
 
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.orm import Session, selectinload
@@ -23,6 +24,31 @@ def unique_post_slug(db: Session, value: str, post_id: int | None = None) -> str
         count += 1
 
 
+def estimate_read_time(content: str | None) -> int:
+    words = re.findall(r"\w+", content or "")
+    return max(1, (len(words) + 199) // 200)
+
+
+def published_time_label(published_at: datetime | None, now: datetime | None = None) -> str:
+    if published_at is None:
+        return "Not published yet"
+    current = now or datetime.now(timezone.utc)
+    published = published_at if published_at.tzinfo else published_at.replace(tzinfo=timezone.utc)
+    seconds = max(0, int((current - published).total_seconds()))
+    if seconds < 60:
+        return "Just now"
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+    hours = minutes // 60
+    if hours < 24:
+        return f"{hours} hour{'s' if hours != 1 else ''} ago"
+    days = hours // 24
+    if days <= 7:
+        return f"{days} day{'s' if days != 1 else ''} ago"
+    return published.strftime("%b %d, %Y")
+
+
 def published_posts_query():
     return (
         select(Post)
@@ -41,6 +67,14 @@ def trending_posts(db: Session, limit: int = 5) -> list[Post]:
 
 def featured_post(db: Session) -> Post | None:
     return db.scalar(published_posts_query().where(Post.is_featured.is_(True)).order_by(Post.published_at.desc().nullslast()).limit(1))
+
+
+def published_posts_count(db: Session) -> int:
+    return db.scalar(select(func.count(Post.id)).where(Post.status == "published")) or 0
+
+
+def paginated_posts(db: Session, offset: int, limit: int) -> list[Post]:
+    return db.scalars(published_posts_query().order_by(Post.published_at.desc().nullslast(), Post.created_at.desc()).offset(offset).limit(limit)).all()
 
 
 def get_published_post(db: Session, slug: str) -> Post | None:
@@ -81,6 +115,38 @@ def posts_by_category(db: Session, category: Category) -> list[Post]:
 
 def posts_by_tag(db: Session, tag: Tag) -> list[Post]:
     return db.scalars(published_posts_query().join(Post.tags).where(Tag.id == tag.id).order_by(Post.published_at.desc().nullslast())).all()
+
+
+def related_posts(db: Session, post: Post, limit: int = 6) -> list[Post]:
+    related: list[Post] = []
+    seen_ids = {post.id}
+
+    if post.category:
+        for item in posts_by_category(db, post.category):
+            if item.id not in seen_ids:
+                related.append(item)
+                seen_ids.add(item.id)
+            if len(related) >= limit:
+                return related
+
+    tag_ids = [tag.id for tag in post.tags]
+    if tag_ids:
+        tagged_posts = db.scalars(
+            published_posts_query()
+            .join(Post.tags)
+            .where(Tag.id.in_(tag_ids), Post.id != post.id)
+            .distinct()
+            .order_by(Post.published_at.desc().nullslast(), Post.created_at.desc())
+            .limit(limit * 2)
+        ).all()
+        for item in tagged_posts:
+            if item.id not in seen_ids:
+                related.append(item)
+                seen_ids.add(item.id)
+            if len(related) >= limit:
+                break
+
+    return related
 
 
 def create_or_update_post(
