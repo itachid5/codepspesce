@@ -1,7 +1,7 @@
 from cloudinary import uploader
 from fastapi import HTTPException, UploadFile, status
 
-from app.api.cloudinary.schemas import CloudinaryUploadResponse
+from app.api.cloudinary.schemas import CloudinaryUploadData, CloudinaryUploadResponse
 from app.core.cloudinary import configure_cloudinary
 from app.core.config import Settings
 from app.utils.file_validation import validate_upload_file
@@ -28,13 +28,15 @@ async def upload_media(file: UploadFile, settings: Settings) -> CloudinaryUpload
         await file.close()
 
     return CloudinaryUploadResponse(
-        secure_url=result["secure_url"],
-        public_id=result["public_id"],
-        resource_type=result.get("resource_type", "unknown"),
-        format=result.get("format"),
-        bytes=result.get("bytes"),
-        original_filename=result.get("original_filename") or file.filename,
-        asset_id=result.get("asset_id"),
-        width=result.get("width"),
-        height=result.get("height"),
+        data=CloudinaryUploadData(
+            secure_url=result["secure_url"],
+            public_id=result["public_id"],
+            resource_type=result.get("resource_type", "unknown"),
+            format=result.get("format"),
+            bytes=result.get("bytes"),
+            original_filename=result.get("original_filename") or file.filename,
+            asset_id=result.get("asset_id"),
+            width=result.get("width"),
+            height=result.get("height"),
+        )
     )

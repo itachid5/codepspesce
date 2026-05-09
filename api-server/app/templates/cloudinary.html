@@ -35,22 +35,14 @@
 
 <section class="card docs-grid">
   <div>
-    <h2>curl example</h2>
-    <pre><code>curl -X POST "http://127.0.0.1:8000/api/cloudinary/upload" \
-  -F "file=@/path/to/example.jpg"</code></pre>
+    <h2>Local curl example</h2>
+    <pre><code>curl -X POST "http://localhost:8000/api/cloudinary/upload" \
+  -F "file=@example.jpg"</code></pre>
   </div>
   <div>
-    <h2>Python example</h2>
-    <pre><code>import requests
-
-with open("example.jpg", "rb") as file:
-    response = requests.post(
-        "http://127.0.0.1:8000/api/cloudinary/upload",
-        files={"file": file},
-        timeout=60,
-    )
-
-print(response.json())</code></pre>
+    <h2>Render curl example</h2>
+    <pre><code>curl -X POST "https://your-render-app.onrender.com/api/cloudinary/upload" \
+  -F "file=@example.jpg"</code></pre>
   </div>
 </section>
 
@@ -58,36 +50,41 @@ print(response.json())</code></pre>
   <div>
     <h2>Success response</h2>
     <pre><code>{
-  "secure_url": "https://res.cloudinary.com/example/image/upload/v123/example.jpg",
-  "public_id": "example",
-  "resource_type": "image",
-  "format": "jpg",
-  "bytes": 12345,
-  "original_filename": "example",
-  "asset_id": "abc123",
-  "width": 1200,
-  "height": 800
+  "success": true,
+  "message": "File uploaded successfully",
+  "data": {
+    "secure_url": "https://res.cloudinary.com/example/image/upload/v123/example.jpg",
+    "public_id": "example_public_id",
+    "resource_type": "image",
+    "format": "jpg",
+    "bytes": 123456,
+    "original_filename": "example",
+    "asset_id": "abc123",
+    "width": 1200,
+    "height": 800
+  }
 }</code></pre>
   </div>
   <div>
-    <h2>Error response</h2>
+    <h2>Missing Cloudinary configuration</h2>
     <pre><code>{
-  "detail": "Unsupported file type: application/x-msdownload"
+  "success": false,
+  "message": "Cloudinary configuration is missing. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET."
 }</code></pre>
   </div>
 </section>
 
 <section class="card">
   <h2>Environment setup</h2>
-  <p>Create a local <code>.env</code> file with these required variables:</p>
-  <pre><code>CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-PORT=8000
-APP_NAME=API Server
+  <p>Create a local <code>.env</code> file or add these variables in the Render dashboard:</p>
+  <pre><code>APP_NAME=API Server
 APP_ENV=development
+PORT=8000
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 MAX_UPLOAD_SIZE_MB=50</code></pre>
-  <p>Secrets must stay in <code>.env</code>. Use <code>.env.example</code> only for placeholders.</p>
+  <p>Secrets must stay in <code>.env</code> locally and in Render environment variables after deployment.</p>
 </section>
 {% endblock %}
 

@@ -1,16 +1,6 @@
 # API Server
 
-A modular Python FastAPI website and API server for managing multiple APIs from one place.
-
-## What is included
-
-- FastAPI app with built-in `/docs` and `/redoc`
-- Jinja2 website pages
-- Static CSS and JavaScript assets
-- Modular API folder structure
-- Cloudinary media upload API
-- Environment-based configuration
-- Pytest test suite
+API Server is a modular Python FastAPI website and API server with Cloudinary media uploads, HTML documentation pages, static assets, environment-based configuration, and tests.
 
 ## Project structure
 
@@ -42,57 +32,156 @@ tests/
   conftest.py
   test_pages.py
   test_cloudinary_api.py
+requirements.txt
+render.yaml
+Procfile
+.env.example
 ```
 
-Future APIs can be added as isolated modules under `app/api/new_api_name/` with their own `routes.py`, `service.py`, `schemas.py`, and documentation page.
+## Local setup
 
-## Setup
-
-Create and activate a virtual environment:
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
+```
+
+Activate it on Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Activate it on macOS/Linux:
+
+```bash
 source .venv/bin/activate
 ```
 
 Install dependencies:
 
 ```bash
-pip install -e .
+pip install -r requirements.txt
 ```
 
-Create a local `.env` file from `.env.example`:
+Create your local environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in your Cloudinary values:
+Fill in `.env` with your local values:
 
 ```env
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-PORT=8000
 APP_NAME=API Server
 APP_ENV=development
+PORT=8000
+
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
 MAX_UPLOAD_SIZE_MB=50
 ```
 
-Do not commit `.env`.
+Do not commit real secrets.
 
-## Run the server
+## Run locally
 
 ```bash
-uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## Website pages
+## Local URLs
 
-- Home page: `http://127.0.0.1:8000/`
-- Cloudinary docs and browser upload form: `http://127.0.0.1:8000/cloudinary`
-- Swagger docs: `http://127.0.0.1:8000/docs`
-- ReDoc: `http://127.0.0.1:8000/redoc`
+- Home: `http://localhost:8000/`
+- Swagger docs: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+- Cloudinary docs: `http://localhost:8000/docs/cloudinary`
+- Legacy Cloudinary docs alias: `http://localhost:8000/cloudinary`
+- Health check: `http://localhost:8000/health`
+
+## Render deployment
+
+### Option 1: Manual Web Service setup
+
+1. Push this project to GitHub.
+2. Go to Render.com.
+3. Create a new Web Service.
+4. Connect your GitHub repository.
+5. Set Environment to `Python`.
+6. Set Build Command:
+
+```bash
+pip install -r requirements.txt
+```
+
+7. Set Start Command:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+8. Add environment variables in the Render dashboard:
+
+```env
+APP_NAME=API Server
+APP_ENV=production
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
+
+Render automatically provides `PORT`, so you do not need to add it manually.
+
+9. Deploy.
+
+### Option 2: Render Blueprint
+
+This project includes `render.yaml`, so you can also deploy it as a Render Blueprint. The Blueprint uses:
+
+```bash
+pip install -r requirements.txt
+```
+
+as the build command and:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+as the start command.
+
+You still need to add the Cloudinary secret values in Render.
+
+## Render URLs
+
+After deployment, replace `your-render-app` with your Render service name:
+
+- Home: `https://your-render-app.onrender.com/`
+- Swagger docs: `https://your-render-app.onrender.com/docs`
+- ReDoc: `https://your-render-app.onrender.com/redoc`
+- Cloudinary docs: `https://your-render-app.onrender.com/docs/cloudinary`
+- Legacy Cloudinary docs alias: `https://your-render-app.onrender.com/cloudinary`
+- Health check: `https://your-render-app.onrender.com/health`
+
+## Health check
+
+Endpoint:
+
+```text
+GET /health
+```
+
+Example response:
+
+```json
+{
+  "status": "ok",
+  "service": "API Server",
+  "environment": "production"
+}
+```
 
 ## Cloudinary upload API
 
@@ -102,42 +191,53 @@ Endpoint:
 POST /api/cloudinary/upload
 ```
 
-Request type:
-
-```text
-multipart/form-data
-```
-
-Required field:
+Form field:
 
 ```text
 file
 ```
 
-Example curl request:
+Example Render curl:
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/cloudinary/upload" \
-  -F "file=@/path/to/example.jpg"
+curl -X POST "https://your-render-app.onrender.com/api/cloudinary/upload" \
+  -F "file=@example.jpg"
 ```
 
-Example success response:
+Example local curl:
+
+```bash
+curl -X POST "http://localhost:8000/api/cloudinary/upload" \
+  -F "file=@example.jpg"
+```
+
+Expected success response:
 
 ```json
 {
-  "secure_url": "https://res.cloudinary.com/example/image/upload/v123/example.jpg",
-  "public_id": "example",
-  "resource_type": "image",
-  "format": "jpg",
-  "bytes": 12345,
-  "original_filename": "example",
-  "asset_id": "abc123",
-  "width": 1200,
-  "height": 800
+  "success": true,
+  "message": "File uploaded successfully",
+  "data": {
+    "secure_url": "https://res.cloudinary.com/...",
+    "public_id": "example_public_id",
+    "resource_type": "image",
+    "format": "jpg",
+    "bytes": 123456,
+    "original_filename": "example"
+  }
 }
 ```
 
-Supported upload categories include images, videos, audio files, PDFs, text files, CSV/JSON files, ZIP files, and common Office documents.
+If Cloudinary credentials are missing, the upload endpoint returns:
+
+```json
+{
+  "success": false,
+  "message": "Cloudinary configuration is missing. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET."
+}
+```
+
+The browser upload form on `/docs/cloudinary` uses the relative URL `/api/cloudinary/upload`, so it works locally and on Render.
 
 ## Run tests
 

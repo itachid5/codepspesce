@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, HttpUrl
 
 
-class CloudinaryUploadResponse(BaseModel):
+class CloudinaryUploadData(BaseModel):
     secure_url: HttpUrl
     public_id: str
     resource_type: str
@@ -11,3 +11,9 @@ class CloudinaryUploadResponse(BaseModel):
     asset_id: str | None = None
     width: int | None = Field(default=None, ge=0)
     height: int | None = Field(default=None, ge=0)
+
+
+class CloudinaryUploadResponse(BaseModel):
+    success: bool = True
+    message: str = "File uploaded successfully"
+    data: CloudinaryUploadData

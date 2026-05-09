@@ -14,6 +14,10 @@ if (form && resultBox) {
       const payload = await response.json();
       resultBox.textContent = JSON.stringify(payload, null, 2);
 
+      if (!response.ok && payload.message) {
+        resultBox.textContent = JSON.stringify(payload, null, 2);
+      }
+
       if (!response.ok) {
         resultBox.classList.add("error");
       } else {
