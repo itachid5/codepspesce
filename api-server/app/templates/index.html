@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ app_name }} | Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Modular Python API Platform</p>
+  <h1>{{ app_name }}</h1>
+  <p class="lead">A clean FastAPI website and API server for managing multiple services from one place.</p>
+  <div class="actions">
+    <a class="button" href="/cloudinary">View Cloudinary API</a>
+    <a class="button secondary" href="/docs">Open Swagger Docs</a>
+  </div>
+</section>
+
+<section class="card-grid">
+  <article class="card">
+    <h2>Available APIs</h2>
+    <ul class="feature-list">
+      <li><a href="/cloudinary">Cloudinary Media Upload API</a></li>
+    </ul>
+  </article>
+  <article class="card">
+    <h2>Built for growth</h2>
+    <p>Add future APIs as isolated modules with routes, schemas, services, and documentation pages.</p>
+  </article>
+  <article class="card">
+    <h2>Developer docs</h2>
+    <p>Interactive OpenAPI documentation is available through FastAPI at <a href="/docs">/docs</a> and <a href="/redoc">/redoc</a>.</p>
+  </article>
+</section>
+{% endblock %}

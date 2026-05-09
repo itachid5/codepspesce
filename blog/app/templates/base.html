@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ settings.get('site_name', 'Blog Website') }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">{{ settings.get('site_name', 'Blog Website') }}</a>
+    <nav class="desktop-nav">
+      <a href="/">Home</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/admin/login">Admin Login</a>
+    </nav>
+    <form class="header-search" action="/search"><input name="q" placeholder="Search posts"><button>Search</button></form>
+    <button class="menu-button" data-open-menu>Menu</button>
+  </header>
+  <aside class="drawer" id="drawer">
+    <button class="drawer-close" data-close-menu>Close</button>
+    <a href="/">Home</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/admin/login">Admin Login</a>
+    <h3>Categories</h3>
+    {% for category in categories | default([]) %}<a href="/category/{{ category.slug }}">{{ category.name }}</a>{% else %}<span>No categories yet</span>{% endfor %}
+  </aside>
+  <main>
+    {% if not_found is defined %}<section class="page-card"><h1>Page not found</h1><p>The page you requested could not be found.</p></section>{% else %}{% block content %}{% endblock %}{% endif %}
+  </main>
+  <footer class="site-footer">
+    <p>{{ settings.get('site_description', 'A modern professional blog built with FastAPI.') }}</p>
+    <p>&copy; {{ settings.get('site_name', 'Blog Website') }}</p>
+  </footer>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Search - {{ settings.get('site_name', 'Blog Website') }}{% endblock %}
+{% block content %}<section class="page-card"><h1>Search</h1><form action="/search" class="hero-search"><input name="q" value="{{ q }}" placeholder="Search posts"><button>Search</button></form><p>{{ results|length }} result(s) for “{{ q }}”.</p></section><div class="post-grid list-page">{% for post in results %}<article class="post-card"><h3><a href="/post/{{ post.slug }}">{{ post.title }}</a></h3><p>{{ post.summary }}</p></article>{% else %}<p>No matching posts found.</p>{% endfor %}</div>{% endblock %}

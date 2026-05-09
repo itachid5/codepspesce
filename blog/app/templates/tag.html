@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}#{{ tag.name }} - {{ settings.get('site_name', 'Blog Website') }}{% endblock %}
+{% block content %}<section class="page-card"><h1>#{{ tag.name }}</h1><p>Posts tagged with {{ tag.name }}.</p></section><div class="post-grid list-page">{% for post in posts %}<article class="post-card"><h3><a href="/post/{{ post.slug }}">{{ post.title }}</a></h3><p>{{ post.summary }}</p></article>{% else %}<p>No posts with this tag yet.</p>{% endfor %}</div>{% endblock %}

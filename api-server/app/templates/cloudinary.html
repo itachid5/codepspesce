@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Cloudinary API | {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <p class="eyebrow">Media Upload Service</p>
+  <h1>Cloudinary Media Upload API</h1>
+  <p class="lead">Upload images, videos, audio, PDFs, and common document files to Cloudinary using one API endpoint.</p>
+</section>
+
+<section class="card">
+  <h2>Endpoint</h2>
+  <dl class="endpoint-list">
+    <dt>URL</dt>
+    <dd><code>POST /api/cloudinary/upload</code></dd>
+    <dt>Content type</dt>
+    <dd><code>multipart/form-data</code></dd>
+    <dt>Required field</dt>
+    <dd><code>file</code> — the media or document file to upload</dd>
+    <dt>Maximum size</dt>
+    <dd>{{ max_upload_size_mb }} MB</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Try it in the browser</h2>
+  <form id="upload-form" class="upload-form">
+    <label for="file">Choose a file</label>
+    <input id="file" name="file" type="file" required>
+    <button type="submit">Upload to Cloudinary</button>
+  </form>
+  <pre id="upload-result" class="result-box" aria-live="polite">Select a file and submit the form to see the response.</pre>
+</section>
+
+<section class="card docs-grid">
+  <div>
+    <h2>curl example</h2>
+    <pre><code>curl -X POST "http://127.0.0.1:8000/api/cloudinary/upload" \
+  -F "file=@/path/to/example.jpg"</code></pre>
+  </div>
+  <div>
+    <h2>Python example</h2>
+    <pre><code>import requests
+
+with open("example.jpg", "rb") as file:
+    response = requests.post(
+        "http://127.0.0.1:8000/api/cloudinary/upload",
+        files={"file": file},
+        timeout=60,
+    )
+
+print(response.json())</code></pre>
+  </div>
+</section>
+
+<section class="card docs-grid">
+  <div>
+    <h2>Success response</h2>
+    <pre><code>{
+  "secure_url": "https://res.cloudinary.com/example/image/upload/v123/example.jpg",
+  "public_id": "example",
+  "resource_type": "image",
+  "format": "jpg",
+  "bytes": 12345,
+  "original_filename": "example",
+  "asset_id": "abc123",
+  "width": 1200,
+  "height": 800
+}</code></pre>
+  </div>
+  <div>
+    <h2>Error response</h2>
+    <pre><code>{
+  "detail": "Unsupported file type: application/x-msdownload"
+}</code></pre>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Environment setup</h2>
+  <p>Create a local <code>.env</code> file with these required variables:</p>
+  <pre><code>CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+PORT=8000
+APP_NAME=API Server
+APP_ENV=development
+MAX_UPLOAD_SIZE_MB=50</code></pre>
+  <p>Secrets must stay in <code>.env</code>. Use <code>.env.example</code> only for placeholders.</p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/cloudinary.js') }}"></script>
+{% endblock %}
