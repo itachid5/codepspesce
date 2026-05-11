@@ -4,34 +4,109 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ settings.get('site_name', 'Blog Website') }}{% endblock %}</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=metadata-search">
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = savedTheme || (prefersDark ? 'dark' : 'light');
+    })();
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css?v=menu-dark-footer">
 </head>
 <body>
+  {% set current_path = request.url.path if request is defined else '' %}
+  {% set active_category_slug = category.slug if category is defined and category else '' %}
+  {% set active_tag_slug = tag.slug if tag is defined and tag else '' %}
+  {% macro icon(name) -%}
+    {% if name == 'home' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg>{% endif %}
+    {% if name == 'posts' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-1.5Z"></path><path d="M8 7h6"></path><path d="M8 11h8"></path></svg>{% endif %}
+    {% if name == 'grid' %}<svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>{% endif %}
+    {% if name == 'tag' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.6 13.1 13 20.7a2 2 0 0 1-2.8 0L3.3 13.8A2 2 0 0 1 2.7 12V5a2 2 0 0 1 2-2h7c.5 0 1 .2 1.4.6l7.5 7.5a2 2 0 0 1 0 2Z"></path><path d="M7.5 7.5h.01"></path></svg>{% endif %}
+    {% if name == 'user' %}<svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M6 21v-2a6 6 0 0 1 12 0v2"></path></svg>{% endif %}
+    {% if name == 'mail' %}<svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>{% endif %}
+    {% if name == 'shield' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path></svg>{% endif %}
+    {% if name == 'file' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6"></path></svg>{% endif %}
+    {% if name == 'lock' %}<svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>{% endif %}
+    {% if name == 'moon' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 7.2A9 9 0 1 1 12 3Z"></path></svg>{% endif %}
+    {% if name == 'sun' %}<svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>{% endif %}
+    {% if name == 'search' %}<svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>{% endif %}
+    {% if name == 'menu' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg>{% endif %}
+    {% if name == 'close' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>{% endif %}
+    {% if name == 'chevron' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>{% endif %}
+    {% if name == 'arrow' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>{% endif %}
+    {% if name == 'external' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>{% endif %}
+    {% if name == 'up' %}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"></path></svg>{% endif %}
+  {%- endmacro %}
+  {% macro nav_link(href, label, icon_name) -%}
+    <a class="menu-link {% if current_path == href %}active{% endif %}" href="{{ href }}">{{ icon(icon_name) }}<span>{{ label }}</span></a>
+  {%- endmacro %}
   <header class="site-header">
     <a class="brand" href="/">{{ settings.get('site_name', 'Blog Website') }}</a>
     <nav class="desktop-nav">
-      <a href="/">Home</a><a href="/posts">All Posts</a><a href="/categories">Categories</a><a href="/tags">Tags</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/admin/login">Admin Login</a>
+      <a href="/" {% if current_path == '/' %}class="active"{% endif %}>Home</a><a href="/posts" {% if current_path == '/posts' %}class="active"{% endif %}>All Posts</a><a href="/categories" {% if current_path == '/categories' %}class="active"{% endif %}>Categories</a><a href="/tags" {% if current_path == '/tags' %}class="active"{% endif %}>Tags</a><a href="/about" {% if current_path == '/about' %}class="active"{% endif %}>About</a><a href="/contact" {% if current_path == '/contact' %}class="active"{% endif %}>Contact</a>
     </nav>
     <div class="header-controls">
-      <form class="header-search" action="/search"><input name="q" placeholder="Search posts"><button class="search-button" aria-label="Submit search"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg><span>Search</span></button></form>
-      <button class="icon-button search-toggle" aria-label="Open search" aria-expanded="false" data-open-search><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg></button>
-      <button class="menu-button icon-button" aria-label="Open menu" aria-controls="drawer" aria-expanded="false" data-open-menu><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg><span>Menu</span></button>
+      <form class="header-search" action="/search"><input name="q" placeholder="Search posts"><button class="search-button" aria-label="Submit search">{{ icon('search') }}<span>Search</span></button></form>
+      <button class="icon-button theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false" data-theme-toggle><span class="theme-toggle-icon theme-toggle-sun">{{ icon('sun') }}</span><span class="theme-toggle-icon theme-toggle-moon">{{ icon('moon') }}</span><span class="theme-toggle-label">Theme</span></button>
+      <button class="icon-button search-toggle" type="button" aria-label="Open search" aria-expanded="false" data-open-search>{{ icon('search') }}</button>
+      <button class="menu-button icon-button" type="button" aria-label="Open menu" aria-controls="drawer" aria-expanded="false" data-open-menu>{{ icon('menu') }}<span>Menu</span></button>
     </div>
   </header>
   <div class="drawer-overlay" data-close-menu hidden></div>
   <aside class="drawer" id="drawer" aria-hidden="true">
-    <button class="drawer-close icon-button" aria-label="Close menu" data-close-menu><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span>Close</span></button>
-    <a href="/">Home</a><a href="/posts">All Posts</a><a href="/categories">Categories</a><a href="/tags">Tags</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/admin/login">Admin Login</a>
-    <h3>Categories</h3>
-    {% for category in categories | default([]) %}<a href="/category/{{ category.slug }}">{{ category.name }}</a>{% else %}<span>No categories yet</span>{% endfor %}
+    <div class="drawer-head">
+      <div><p class="drawer-kicker">Navigation</p><h2>{{ settings.get('site_name', 'Blog Website') }}</h2></div>
+      <button class="drawer-close icon-button" type="button" aria-label="Close menu" data-close-menu>{{ icon('close') }}</button>
+    </div>
+    <nav class="drawer-nav" aria-label="Site menu">
+      {{ nav_link('/', 'Home', 'home') }}
+      {{ nav_link('/posts', 'All Posts', 'posts') }}
+      <div class="drawer-section {% if active_category_slug %}open{% endif %}" data-drawer-section>
+        <button class="drawer-section-toggle" type="button" aria-expanded="{{ 'true' if active_category_slug else 'false' }}" data-drawer-toggle>{{ icon('grid') }}<span>Categories</span><span class="drawer-chevron">{{ icon('chevron') }}</span></button>
+        <div class="drawer-submenu" {% if not active_category_slug %}hidden{% endif %}>
+          {% for menu_category in menu_categories | default([]) %}
+            <a class="drawer-subitem {% if active_category_slug == menu_category.slug %}active{% endif %}" href="/category/{{ menu_category.slug }}">{{ menu_category.name }}</a>
+          {% else %}<span class="drawer-empty">No selected categories yet</span>{% endfor %}
+          <a class="drawer-view-all" href="/categories">View All Categories {{ icon('arrow') }}</a>
+        </div>
+      </div>
+      <div class="drawer-section {% if active_tag_slug %}open{% endif %}" data-drawer-section>
+        <button class="drawer-section-toggle" type="button" aria-expanded="{{ 'true' if active_tag_slug else 'false' }}" data-drawer-toggle>{{ icon('tag') }}<span>Tags</span><span class="drawer-chevron">{{ icon('chevron') }}</span></button>
+        <div class="drawer-submenu" {% if not active_tag_slug %}hidden{% endif %}>
+          {% for menu_tag in menu_tags | default([]) %}
+            <a class="drawer-subitem {% if active_tag_slug == menu_tag.slug %}active{% endif %}" href="/tag/{{ menu_tag.slug }}">#{{ menu_tag.name }}</a>
+          {% else %}<span class="drawer-empty">No selected tags yet</span>{% endfor %}
+          <a class="drawer-view-all" href="/tags">View All Tags {{ icon('arrow') }}</a>
+        </div>
+      </div>
+      {{ nav_link('/about', 'About', 'user') }}
+      {{ nav_link('/contact', 'Contact', 'mail') }}
+      {{ nav_link('/privacy', 'Privacy Policy', 'shield') }}
+      {{ nav_link('/terms', 'Terms', 'file') }}
+      {{ nav_link('/admin/login', 'Admin Login', 'lock') }}
+      <button class="menu-link drawer-theme-toggle" type="button" data-theme-toggle>{{ icon('moon') }}<span class="theme-toggle-label">Dark Mode</span></button>
+    </nav>
   </aside>
-  <main>
+  <main id="top">
     {% if not_found is defined %}<section class="page-card"><h1>Page not found</h1><p>The page you requested could not be found.</p></section>{% else %}{% block content %}{% endblock %}{% endif %}
   </main>
   <footer class="site-footer">
-    <p>{{ settings.get('site_description', 'A modern professional blog built with FastAPI.') }}</p>
-    <p>&copy; {{ settings.get('site_name', 'Blog Website') }}</p>
+    <div class="footer-grid">
+      <section class="footer-brand-block">
+        <a class="footer-brand" href="/">{{ settings.get('site_name', 'Blog Website') }}</a>
+        <p>{{ settings.get('site_description', 'A modern professional blog built with FastAPI.') }}</p>
+        <div class="footer-socials" aria-label="Social links">
+          {% if settings.get('twitter_url') %}<a href="{{ settings.get('twitter_url') }}" target="_blank" rel="noopener">Twitter {{ icon('external') }}</a>{% endif %}
+          {% if settings.get('github_url') %}<a href="{{ settings.get('github_url') }}" target="_blank" rel="noopener">GitHub {{ icon('external') }}</a>{% endif %}
+          {% if settings.get('linkedin_url') %}<a href="{{ settings.get('linkedin_url') }}" target="_blank" rel="noopener">LinkedIn {{ icon('external') }}</a>{% endif %}
+        </div>
+      </section>
+      <section><h2>Explore</h2><a href="/posts">All Posts</a><a href="/categories">Categories</a><a href="/tags">Tags</a><a href="/search">Search</a></section>
+      <section><h2>Company</h2><a href="/about">About</a><a href="/contact">Contact</a><a href="/admin/login">Admin Login</a></section>
+      <section><h2>Legal</h2><a href="/privacy">Privacy Policy</a><a href="/terms">Terms</a><a class="back-to-top" href="#top">Back to top {{ icon('up') }}</a></section>
+    </div>
+    <div class="footer-bottom"><span>&copy; {{ settings.get('site_name', 'Blog Website') }}</span><span>Built for clear, fast reading.</span></div>
   </footer>
-  <script src="/static/js/main.js?v=metadata-search"></script>
+  <script src="/static/js/main.js?v=menu-dark-footer"></script>
 </body>
 </html>

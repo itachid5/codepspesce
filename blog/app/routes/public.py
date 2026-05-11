@@ -20,6 +20,8 @@ def public_context(db: Session) -> dict:
         "settings": get_settings_map(db),
         "categories": db.scalars(select(Category).order_by(Category.name)).all(),
         "tags": db.scalars(select(Tag).order_by(Tag.name)).all(),
+        "menu_categories": category_service.menu_categories(db),
+        "menu_tags": tag_service.menu_tags(db),
         "trending_posts": post_service.trending_posts(db),
         "estimate_read_time": post_service.estimate_read_time,
         "published_time_label": post_service.published_time_label,

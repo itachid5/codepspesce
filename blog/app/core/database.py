@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from datetime import datetime, timezone
 
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, inspect, select, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import get_settings
@@ -28,6 +28,21 @@ def init_db() -> None:
     import app.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    ensure_menu_columns()
+
+
+def ensure_menu_columns() -> None:
+    inspector = inspect(engine)
+    expected = {
+        "show_in_menu": "BOOLEAN NOT NULL DEFAULT FALSE",
+        "menu_order": "INTEGER NOT NULL DEFAULT 0",
+    }
+    with engine.begin() as connection:
+        for table_name in ("categories", "tags"):
+            existing = {column["name"] for column in inspector.get_columns(table_name)}
+            for column_name, column_definition in expected.items():
+                if column_name not in existing:
+                    connection.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_definition}"))
 
 
 def seed_default_data() -> None:

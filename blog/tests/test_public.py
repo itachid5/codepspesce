@@ -15,10 +15,12 @@ def create_taxonomy(admin_client, category_name, tag_name):
     response = admin_client.post("/admin/tags", data={"name": tag_name}, follow_redirects=False)
     assert response.status_code == 303
 
-    categories_page = admin_client.get("/admin/categories")
-    tags_page = admin_client.get("/admin/tags")
-    category_match = re.search(rf"<tr><td>{re.escape(category_name)}</td><td>.*?</td><td>.*?</td><td><form method=\"post\" action=\"/admin/categories/(\d+)/delete\"", categories_page.text)
-    tag_match = re.search(rf"<tr><td>{re.escape(tag_name)}</td><td>.*?</td><td><form method=\"post\" action=\"/admin/tags/(\d+)/delete\"", tags_page.text)
+    categories_page = BeautifulSoup(admin_client.get("/admin/categories").text, "html.parser")
+    tags_page = BeautifulSoup(admin_client.get("/admin/tags").text, "html.parser")
+    category_row = categories_page.find("input", attrs={"name": "name", "value": category_name}).find_parent("tr")
+    tag_row = tags_page.find("input", attrs={"name": "name", "value": tag_name}).find_parent("tr")
+    category_match = re.search(r"/admin/categories/(\d+)/delete", category_row.decode())
+    tag_match = re.search(r"/admin/tags/(\d+)/delete", tag_row.decode())
     assert category_match is not None
     assert tag_match is not None
     return category_match.group(1), tag_match.group(1)
@@ -113,6 +115,37 @@ def test_create_taxonomy_post_search_and_detail(admin_client):
     assert "1 post" in tags.text
 
 
+def test_drawer_uses_selected_menu_taxonomy(admin_client):
+    suffix = uuid4().hex[:8]
+    shown_category = f"Shown Category {suffix}"
+    hidden_category = f"Hidden Category {suffix}"
+    shown_tag = f"Shown Tag {suffix}"
+    hidden_tag = f"Hidden Tag {suffix}"
+    admin_client.post("/admin/categories", data={"name": shown_category, "description": "Visible", "show_in_menu": "true", "menu_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/categories", data={"name": hidden_category, "description": "Hidden"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": shown_tag, "show_in_menu": "true", "menu_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": hidden_tag}, follow_redirects=False)
+
+    home = admin_client.get("/")
+    assert home.status_code == 200
+    soup = BeautifulSoup(home.text, "html.parser")
+    drawer = soup.select_one("#drawer")
+    assert drawer is not None
+    assert shown_category in drawer.get_text(" ")
+    assert shown_tag in drawer.get_text(" ")
+    assert hidden_category not in drawer.get_text(" ")
+    assert hidden_tag not in drawer.get_text(" ")
+    assert drawer.select_one("[data-drawer-toggle]") is not None
+    assert soup.select_one("[data-theme-toggle]") is not None
+
+    categories = admin_client.get("/categories")
+    tags = admin_client.get("/tags")
+    assert shown_category in categories.text
+    assert hidden_category in categories.text
+    assert shown_tag in tags.text
+    assert hidden_tag in tags.text
+
+
 def test_view_counts_featured_images_and_trending(admin_client):
     suffix = uuid4().hex[:8]
     category_id, tag_id = create_taxonomy(admin_client, f"Views {suffix}", f"Images {suffix}")
@@ -122,19 +155,19 @@ def test_view_counts_featured_images_and_trending(admin_client):
     create_post(admin_client, title=f"High Views {suffix}", slug=high_slug, category_id=category_id, tag_id=tag_id, summary=f"High image summary {suffix}")
     low_image = f"https://cdn.example.test/{low_slug}.png"
     high_image = f"https://cdn.example.test/{high_slug}.png"
-    set_post_metadata(low_slug, featured_image_url=low_image, views_count=1_000_000)
-    set_post_metadata(high_slug, featured_image_url=high_image, views_count=1_000_001)
+    set_post_metadata(low_slug, featured_image_url=low_image, views_count=1_999_999_998)
+    set_post_metadata(high_slug, featured_image_url=high_image, views_count=1_999_999_999)
 
     detail = admin_client.get(f"/post/{high_slug}")
     assert detail.status_code == 200
     assert high_image in detail.text
-    assert "1000002 views" in detail.text
+    assert "2000000000 views" in detail.text
 
     for path in ["/", "/posts", f"/category/views-{suffix}", f"/tag/images-{suffix}", f"/search?q={suffix}"]:
         response = admin_client.get(path)
         assert response.status_code == 200
         assert high_image in response.text
-        assert "1000002 views" in response.text
+        assert "2000000000 views" in response.text
 
     home_soup = BeautifulSoup(admin_client.get("/").text, "html.parser")
     trending = [item.get_text(" ") for item in home_soup.select(".trend")]
