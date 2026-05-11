@@ -57,8 +57,11 @@ def published_posts_query():
     )
 
 
-def latest_posts(db: Session, limit: int = 9) -> list[Post]:
-    return db.scalars(published_posts_query().order_by(Post.published_at.desc().nullslast(), Post.created_at.desc()).limit(limit)).all()
+def latest_posts(db: Session, limit: int = 9, exclude_post_id: int | None = None) -> list[Post]:
+    query = published_posts_query()
+    if exclude_post_id is not None:
+        query = query.where(Post.id != exclude_post_id)
+    return db.scalars(query.order_by(Post.published_at.desc().nullslast(), Post.created_at.desc()).limit(limit)).all()
 
 
 def trending_posts(db: Session, limit: int = 5) -> list[Post]:

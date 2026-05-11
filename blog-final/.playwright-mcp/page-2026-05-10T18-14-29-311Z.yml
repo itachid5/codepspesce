@@ -1,0 +1,93 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "The Signal Ledger" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Latest" [ref=e6] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e7] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e8] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e9] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e10] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e11] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e15]:
+        - link "Admin Desk" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - navigation [ref=e17]:
+          - link "Posts" [ref=e18] [cursor=pointer]:
+            - /url: /admin/posts
+          - link "Categories" [ref=e19] [cursor=pointer]:
+            - /url: /admin/categories
+          - link "Tags" [ref=e20] [cursor=pointer]:
+            - /url: /admin/tags
+          - link "Site" [ref=e21] [cursor=pointer]:
+            - /url: /
+          - button "Logout" [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - paragraph [ref=e27]: CMS
+            - heading "Posts" [level=1] [ref=e28]
+          - link "New post" [ref=e29] [cursor=pointer]:
+            - /url: /admin/posts/new
+        - table [ref=e31]:
+          - rowgroup [ref=e32]:
+            - row "Title Status Category Views Read Date Actions" [ref=e33]:
+              - columnheader "Title" [ref=e34]
+              - columnheader "Status" [ref=e35]
+              - columnheader "Category" [ref=e36]
+              - columnheader "Views" [ref=e37]
+              - columnheader "Read" [ref=e38]
+              - columnheader "Date" [ref=e39]
+              - columnheader "Actions" [ref=e40]
+          - rowgroup [ref=e41]:
+            - row "Why Modern CMS Interfaces Should Feel Like Instruments published Design 968 1 min May 10, 2026 Edit Delete" [ref=e42]:
+              - cell "Why Modern CMS Interfaces Should Feel Like Instruments" [ref=e43]
+              - cell "published" [ref=e44]
+              - cell "Design" [ref=e45]
+              - cell "968" [ref=e46]
+              - cell "1 min" [ref=e47]
+              - cell "May 10, 2026" [ref=e48]
+              - cell "Edit Delete" [ref=e49]:
+                - link "Edit" [ref=e50] [cursor=pointer]:
+                  - /url: /admin/posts/cmp02zek1000f7eei12v896wo/edit
+                - button "Delete" [ref=e52]
+            - row "Designing Analytics That Editors Actually Trust published Product 837 1 min May 10, 2026 Edit Delete" [ref=e53]:
+              - cell "Designing Analytics That Editors Actually Trust" [ref=e54]
+              - cell "published" [ref=e55]
+              - cell "Product" [ref=e56]
+              - cell "837" [ref=e57]
+              - cell "1 min" [ref=e58]
+              - cell "May 10, 2026" [ref=e59]
+              - cell "Edit Delete" [ref=e60]:
+                - link "Edit" [ref=e61] [cursor=pointer]:
+                  - /url: /admin/posts/cmp02zejl000a7eeidxekxwjr/edit
+                - button "Delete" [ref=e63]
+            - row "The Quiet Architecture Behind Fast Product Teams published Engineering 179 1 min May 10, 2026 Edit Delete" [ref=e64]:
+              - cell "The Quiet Architecture Behind Fast Product Teams" [ref=e65]
+              - cell "published" [ref=e66]
+              - cell "Engineering" [ref=e67]
+              - cell "179" [ref=e68]
+              - cell "1 min" [ref=e69]
+              - cell "May 10, 2026" [ref=e70]
+              - cell "Edit Delete" [ref=e71]:
+                - link "Edit" [ref=e72] [cursor=pointer]:
+                  - /url: /admin/posts/cmp02zeiv00057eeiaptlishf/edit
+                - button "Delete" [ref=e74]
+  - contentinfo [ref=e75]:
+    - generic [ref=e76]:
+      - generic [ref=e77]:
+        - paragraph [ref=e78]: The Signal Ledger
+        - paragraph [ref=e79]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e80]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e86] [cursor=pointer]:
+    - img [ref=e87]
+  - alert [ref=e90]

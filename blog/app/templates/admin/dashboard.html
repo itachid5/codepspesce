@@ -1,1 +1,25 @@
-{% extends "admin/base.html" %}{% block title %}Dashboard{% endblock %}{% block header %}Dashboard{% endblock %}{% block content %}<section class="stats"><div><strong>{{ counts.total_posts }}</strong><span>Total Posts</span></div><div><strong>{{ counts.published_posts }}</strong><span>Published</span></div><div><strong>{{ counts.draft_posts }}</strong><span>Drafts</span></div><div><strong>{{ counts.categories }}</strong><span>Categories</span></div><div><strong>{{ counts.tags }}</strong><span>Tags</span></div></section><section class="panel"><div class="panel-heading"><h2>Recent Posts</h2><a class="button" href="/admin/posts/create">Create Post</a></div><table><tr><th>Title</th><th>Status</th><th>Views</th><th>Action</th></tr>{% for post in recent_posts %}<tr><td>{{ post.title }}</td><td><span class="badge {{ post.status }}">{{ post.status }}</span></td><td>{{ post.views_count }}</td><td><a href="/admin/posts/{{ post.id }}/edit">Edit</a></td></tr>{% else %}<tr><td colspan="4">No posts yet.</td></tr>{% endfor %}</table></section>{% endblock %}
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block header %}Dashboard{% endblock %}
+{% block content %}
+<section class="stats">
+  <div><strong>{{ counts.total_posts }}</strong><span>Total Posts</span></div>
+  <div><strong>{{ counts.published_posts }}</strong><span>Published</span></div>
+  <div><strong>{{ counts.draft_posts }}</strong><span>Drafts</span></div>
+  <div><strong>{{ counts.categories }}</strong><span>Categories</span></div>
+  <div><strong>{{ counts.tags }}</strong><span>Tags</span></div>
+</section>
+<section class="panel">
+  <div class="panel-heading"><h2>Recent Posts</h2><a class="button" href="/admin/posts/create">Create Post</a></div>
+  <table>
+    <thead><tr><th>Title</th><th>Status</th><th>Views</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for post in recent_posts %}
+      <tr><td data-label="Title">{{ post.title }}</td><td data-label="Status"><span class="badge {{ post.status }}">{{ post.status }}</span></td><td data-label="Views">{{ post.views_count }}</td><td data-label="Action"><a href="/admin/posts/{{ post.id }}/edit">Edit</a></td></tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="4" class="empty-state">No posts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

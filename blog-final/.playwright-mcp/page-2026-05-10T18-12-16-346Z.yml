@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "The Signal Ledger" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Latest" [ref=e6] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e7] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e8] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e9] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e10] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e11] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - paragraph [ref=e14]: Tag
+      - heading "#Design" [level=1] [ref=e15]
+      - article [ref=e17]:
+        - link "Design Why Modern CMS Interfaces Should Feel Like Instruments Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing. Managing Editor May 10, 2026 1 min read 968 views" [ref=e18] [cursor=pointer]:
+          - /url: /posts/modern-cms-interfaces-instruments
+          - generic [ref=e20]:
+            - text: Design
+            - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=2] [ref=e21]
+            - paragraph [ref=e22]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+            - generic [ref=e23]:
+              - generic [ref=e24]: Managing Editor
+              - generic [ref=e25]: May 10, 2026
+              - generic [ref=e26]: 1 min read
+              - generic [ref=e27]: 968 views
+  - contentinfo [ref=e28]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - paragraph [ref=e31]: The Signal Ledger
+        - paragraph [ref=e32]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e33]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e39] [cursor=pointer]:
+    - img [ref=e40]
+  - alert [ref=e43]

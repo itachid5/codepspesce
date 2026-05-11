@@ -3,8 +3,9 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{% block title %}Admin{% endblock %}</title><link rel="stylesheet" href="/static/css/admin.css"></head>
 <body>
 <div class="admin-shell">
-  <aside class="admin-sidebar"><h2>{{ settings.get('site_name', 'Blog Admin') }}</h2><a href="/admin/dashboard">Dashboard</a><a href="/admin/posts">Posts</a><a href="/admin/categories">Categories</a><a href="/admin/tags">Tags</a><a href="/admin/pages">Pages</a><a href="/admin/settings">Settings</a><a href="/" target="_blank">View Site</a><a href="/admin/logout">Logout</a></aside>
-  <main class="admin-main"><header class="admin-top"><strong>{% block header %}Admin{% endblock %}</strong><span>{{ admin.email if admin else '' }}</span></header>{% block content %}{% endblock %}</main>
+  <div class="admin-overlay" data-admin-close hidden></div>
+  <aside class="admin-sidebar" id="admin-sidebar" aria-hidden="false"><h2>{{ settings.get('site_name', 'Blog Admin') }}</h2><a href="/admin/dashboard">Dashboard</a><a href="/admin/posts">Posts</a><a href="/admin/categories">Categories</a><a href="/admin/tags">Tags</a><a href="/admin/pages">Pages</a><a href="/admin/settings">Settings</a><a href="/" target="_blank">View Site</a><a href="/admin/logout">Logout</a></aside>
+  <main class="admin-main"><header class="admin-top"><button class="admin-menu-button" type="button" aria-label="Open admin menu" aria-controls="admin-sidebar" aria-expanded="false" data-admin-menu>Menu</button><strong>{% block header %}Admin{% endblock %}</strong><span>{{ admin.email if admin else '' }}</span></header>{% block content %}{% endblock %}</main>
 </div>
 <script src="/static/js/admin.js"></script>
 </body>

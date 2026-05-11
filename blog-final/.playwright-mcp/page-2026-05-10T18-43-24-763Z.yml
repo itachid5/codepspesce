@@ -1,0 +1,227 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - button "Open site menu" [ref=e6]
+          - generic:
+            - button
+            - dialog:
+              - generic:
+                - generic:
+                  - paragraph: The Signal Ledger
+                  - paragraph: Navigation
+                - button: ×
+              - generic:
+                - generic:
+                  - heading [level=2]: Main links
+                  - generic:
+                    - link:
+                      - /url: /
+                      - text: Home
+                    - link:
+                      - /url: /posts
+                      - text: All Posts
+                    - link:
+                      - /url: /trending
+                      - text: Trending Posts
+                    - link:
+                      - /url: /posts
+                      - text: Latest Posts
+                    - link:
+                      - /url: /categories
+                      - text: Categories
+                    - link:
+                      - /url: /tags
+                      - text: Tags
+                    - link:
+                      - /url: /search
+                      - text: Search
+                - generic:
+                  - heading [level=2]: Important pages
+                  - generic:
+                    - link:
+                      - /url: /about
+                      - text: About Us
+                    - link:
+                      - /url: /privacy-policy
+                      - text: Privacy Policy
+                    - link:
+                      - /url: /terms-and-conditions
+                      - text: Terms and Conditions
+                    - link:
+                      - /url: /contact
+                      - text: Contact Us
+                - generic:
+                  - heading [level=2]: Categories
+                  - generic:
+                    - link:
+                      - /url: /category/design
+                      - generic: Design
+                      - generic: "1"
+                    - link:
+                      - /url: /category/engineering
+                      - generic: Engineering
+                      - generic: "1"
+                    - link:
+                      - /url: /category/product
+                      - generic: Product
+                      - generic: "1"
+                - generic:
+                  - heading [level=2]: Tags
+                  - generic:
+                    - link:
+                      - /url: /tag/analytics
+                      - generic: "#Analytics"
+                      - generic: "1"
+                    - link:
+                      - /url: /tag/architecture
+                      - generic: "#Architecture"
+                      - generic: "1"
+                    - link:
+                      - /url: /tag/cms
+                      - generic: "#CMS"
+                      - generic: "2"
+                    - link:
+                      - /url: /tag/design
+                      - generic: "#Design"
+                      - generic: "1"
+                    - link:
+                      - /url: /tag/teams
+                      - generic: "#Teams"
+                      - generic: "1"
+                - generic:
+                  - heading [level=2]: Blog options
+                  - generic:
+                    - link:
+                      - /url: /
+                      - text: Featured posts
+                    - link:
+                      - /url: /trending
+                      - text: Popular posts
+                    - link:
+                      - /url: /posts/quiet-architecture-fast-product-teams
+                      - text: The Quiet Architecture Behind Fast Product Teams
+                    - link:
+                      - /url: /posts/modern-cms-interfaces-instruments
+                      - text: Why Modern CMS Interfaces Should Feel Like Instruments
+                    - link:
+                      - /url: /posts/designing-analytics-editors-trust
+                      - text: Designing Analytics That Editors Actually Trust
+                    - link:
+                      - /url: /posts/quiet-architecture-fast-product-teams
+                      - text: The Quiet Architecture Behind Fast Product Teams
+                    - paragraph: Recently viewed posts will appear here.
+                - generic:
+                  - heading [level=2]: Admin
+                  - generic:
+                    - link:
+                      - /url: /admin/login
+                      - text: Admin Login
+                    - link:
+                      - /url: /admin
+                      - text: Admin Dashboard
+        - link "The Signal Ledger" [ref=e11] [cursor=pointer]:
+          - /url: /
+      - generic [ref=e12]:
+        - link "Latest" [ref=e13] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e14] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e15] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e16] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e17] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e18] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - link "Featured / Engineering" [ref=e27] [cursor=pointer]:
+              - /url: /category/engineering
+            - heading "The Quiet Architecture Behind Fast Product Teams" [level=1] [ref=e28]
+          - generic [ref=e29]:
+            - paragraph [ref=e30]: A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony.
+            - generic [ref=e32]:
+              - generic [ref=e33]: Managing Editor
+              - generic [ref=e34]: May 10, 2026
+              - generic [ref=e35]: 1 min read
+              - generic [ref=e36]: 179 views
+            - link "Read the dispatch" [ref=e37] [cursor=pointer]:
+              - /url: /posts/quiet-architecture-fast-product-teams
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - textbox "Search reporting, categories, tags..." [ref=e40]
+            - button "Search" [ref=e41]
+          - complementary [ref=e42]:
+            - heading "Trending now" [level=2] [ref=e43]
+            - link "#1 · Design Why Modern CMS Interfaces Should Feel Like Instruments 968 views · 1 min" [ref=e45] [cursor=pointer]:
+              - /url: /posts/modern-cms-interfaces-instruments
+              - generic [ref=e47]:
+                - paragraph [ref=e48]: "#1 · Design"
+                - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=3] [ref=e49]
+                - paragraph [ref=e50]: 968 views · 1 min
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - paragraph [ref=e53]: Browse the desk
+          - heading "Latest reports" [level=2] [ref=e54]
+        - generic [ref=e55]:
+          - link "All" [ref=e56] [cursor=pointer]:
+            - /url: /posts
+          - link "Design" [ref=e57] [cursor=pointer]:
+            - /url: /category/design
+          - link "Engineering" [ref=e58] [cursor=pointer]:
+            - /url: /category/engineering
+          - link "Product" [ref=e59] [cursor=pointer]:
+            - /url: /category/product
+      - generic [ref=e60]:
+        - article [ref=e61]:
+          - link "Design Why Modern CMS Interfaces Should Feel Like Instruments Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing. Managing Editor May 10, 2026 1 min read 968 views" [ref=e62] [cursor=pointer]:
+            - /url: /posts/modern-cms-interfaces-instruments
+            - generic [ref=e64]:
+              - text: Design
+              - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=2] [ref=e65]
+              - paragraph [ref=e66]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+              - generic [ref=e67]:
+                - generic [ref=e68]: Managing Editor
+                - generic [ref=e69]: May 10, 2026
+                - generic [ref=e70]: 1 min read
+                - generic [ref=e71]: 968 views
+        - article [ref=e72]:
+          - link "Product Designing Analytics That Editors Actually Trust View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest. Managing Editor May 10, 2026 1 min read 837 views" [ref=e73] [cursor=pointer]:
+            - /url: /posts/designing-analytics-editors-trust
+            - generic [ref=e75]:
+              - text: Product
+              - heading "Designing Analytics That Editors Actually Trust" [level=2] [ref=e76]
+              - paragraph [ref=e77]: View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest.
+              - generic [ref=e78]:
+                - generic [ref=e79]: Managing Editor
+                - generic [ref=e80]: May 10, 2026
+                - generic [ref=e81]: 1 min read
+                - generic [ref=e82]: 837 views
+        - article [ref=e83]:
+          - link "Engineering The Quiet Architecture Behind Fast Product Teams A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony. Managing Editor May 10, 2026 1 min read 179 views" [ref=e84] [cursor=pointer]:
+            - /url: /posts/quiet-architecture-fast-product-teams
+            - generic [ref=e86]:
+              - text: Engineering
+              - heading "The Quiet Architecture Behind Fast Product Teams" [level=2] [ref=e87]
+              - paragraph [ref=e88]: A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony.
+              - generic [ref=e89]:
+                - generic [ref=e90]: Managing Editor
+                - generic [ref=e91]: May 10, 2026
+                - generic [ref=e92]: 1 min read
+                - generic [ref=e93]: 179 views
+      - link "View all posts" [ref=e95] [cursor=pointer]:
+        - /url: /posts
+  - contentinfo [ref=e96]:
+    - generic [ref=e97]:
+      - generic [ref=e98]:
+        - paragraph [ref=e99]: The Signal Ledger
+        - paragraph [ref=e100]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e101]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e107] [cursor=pointer]:
+    - img [ref=e108]

@@ -1,0 +1,82 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "The Signal Ledger" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Latest" [ref=e6] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e7] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e8] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e9] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e10] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e11] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - paragraph [ref=e15]: Archive
+        - heading "All published signals" [level=1] [ref=e16]
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - link "All" [ref=e19] [cursor=pointer]:
+            - /url: /posts
+          - link "Design" [ref=e20] [cursor=pointer]:
+            - /url: /category/design
+          - link "Engineering" [ref=e21] [cursor=pointer]:
+            - /url: /category/engineering
+          - link "Product" [ref=e22] [cursor=pointer]:
+            - /url: /category/product
+        - generic [ref=e23]:
+          - textbox "Search reporting, categories, tags..." [ref=e24]
+          - button "Search" [ref=e25]
+      - generic [ref=e26]:
+        - article [ref=e27]:
+          - link "Design Why Modern CMS Interfaces Should Feel Like Instruments Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing. Managing Editor May 10, 2026 1 min read 967 views" [ref=e28] [cursor=pointer]:
+            - /url: /posts/modern-cms-interfaces-instruments
+            - generic [ref=e30]:
+              - text: Design
+              - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=2] [ref=e31]
+              - paragraph [ref=e32]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+              - generic [ref=e33]:
+                - generic [ref=e34]: Managing Editor
+                - generic [ref=e35]: May 10, 2026
+                - generic [ref=e36]: 1 min read
+                - generic [ref=e37]: 967 views
+        - article [ref=e38]:
+          - link "Product Designing Analytics That Editors Actually Trust View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest. Managing Editor May 10, 2026 1 min read 837 views" [ref=e39] [cursor=pointer]:
+            - /url: /posts/designing-analytics-editors-trust
+            - generic [ref=e41]:
+              - text: Product
+              - heading "Designing Analytics That Editors Actually Trust" [level=2] [ref=e42]
+              - paragraph [ref=e43]: View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest.
+              - generic [ref=e44]:
+                - generic [ref=e45]: Managing Editor
+                - generic [ref=e46]: May 10, 2026
+                - generic [ref=e47]: 1 min read
+                - generic [ref=e48]: 837 views
+        - article [ref=e49]:
+          - link "Engineering The Quiet Architecture Behind Fast Product Teams A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony. Managing Editor May 10, 2026 1 min read 179 views" [ref=e50] [cursor=pointer]:
+            - /url: /posts/quiet-architecture-fast-product-teams
+            - generic [ref=e52]:
+              - text: Engineering
+              - heading "The Quiet Architecture Behind Fast Product Teams" [level=2] [ref=e53]
+              - paragraph [ref=e54]: A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony.
+              - generic [ref=e55]:
+                - generic [ref=e56]: Managing Editor
+                - generic [ref=e57]: May 10, 2026
+                - generic [ref=e58]: 1 min read
+                - generic [ref=e59]: 179 views
+  - contentinfo [ref=e60]:
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - paragraph [ref=e63]: The Signal Ledger
+        - paragraph [ref=e64]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e65]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e71] [cursor=pointer]:
+    - img [ref=e72]
+  - alert [ref=e75]

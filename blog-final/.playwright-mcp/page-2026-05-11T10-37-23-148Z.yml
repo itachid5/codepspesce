@@ -1,0 +1,219 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - button "Close site menu" [expanded] [ref=e287]
+        - link "The Signal Ledger" [ref=e12] [cursor=pointer]:
+          - /url: /
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - link "Featured / Engineering" [ref=e28] [cursor=pointer]:
+              - /url: /category/engineering
+            - heading "The Quiet Architecture Behind Fast Product Teams" [level=1] [ref=e29]
+          - generic [ref=e30]:
+            - paragraph [ref=e31]: A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony.
+            - generic [ref=e33]:
+              - generic [ref=e34]: Managing Editor
+              - generic [ref=e35]: May 10, 2026
+              - generic [ref=e36]: 1 min read
+              - generic [ref=e37]: 179 views
+            - link "Read the dispatch" [ref=e38] [cursor=pointer]:
+              - /url: /posts/quiet-architecture-fast-product-teams
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - textbox "Search reporting, categories, tags..." [ref=e41]
+            - button "Search" [ref=e42]
+          - complementary [ref=e43]:
+            - heading "Trending now" [level=2] [ref=e44]
+            - link "#1 · Design Why Modern CMS Interfaces Should Feel Like Instruments 968 views · 1 min" [ref=e46] [cursor=pointer]:
+              - /url: /posts/modern-cms-interfaces-instruments
+              - generic [ref=e48]:
+                - paragraph [ref=e49]: "#1 · Design"
+                - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=3] [ref=e50]
+                - paragraph [ref=e51]: 968 views · 1 min
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - paragraph [ref=e54]: Browse the desk
+          - heading "Latest reports" [level=2] [ref=e55]
+        - generic [ref=e56]:
+          - link "All" [ref=e57] [cursor=pointer]:
+            - /url: /posts
+          - link "Design" [ref=e58] [cursor=pointer]:
+            - /url: /category/design
+          - link "Engineering" [ref=e59] [cursor=pointer]:
+            - /url: /category/engineering
+          - link "Product" [ref=e60] [cursor=pointer]:
+            - /url: /category/product
+      - generic [ref=e61]:
+        - article [ref=e62]:
+          - link "Design Why Modern CMS Interfaces Should Feel Like Instruments Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing. Managing Editor May 10, 2026 1 min read 968 views" [ref=e63] [cursor=pointer]:
+            - /url: /posts/modern-cms-interfaces-instruments
+            - generic [ref=e65]:
+              - text: Design
+              - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=2] [ref=e66]
+              - paragraph [ref=e67]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+              - generic [ref=e68]:
+                - generic [ref=e69]: Managing Editor
+                - generic [ref=e70]: May 10, 2026
+                - generic [ref=e71]: 1 min read
+                - generic [ref=e72]: 968 views
+        - article [ref=e73]:
+          - link "Product Designing Analytics That Editors Actually Trust View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest. Managing Editor May 10, 2026 1 min read 837 views" [ref=e74] [cursor=pointer]:
+            - /url: /posts/designing-analytics-editors-trust
+            - generic [ref=e76]:
+              - text: Product
+              - heading "Designing Analytics That Editors Actually Trust" [level=2] [ref=e77]
+              - paragraph [ref=e78]: View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest.
+              - generic [ref=e79]:
+                - generic [ref=e80]: Managing Editor
+                - generic [ref=e81]: May 10, 2026
+                - generic [ref=e82]: 1 min read
+                - generic [ref=e83]: 837 views
+        - article [ref=e84]:
+          - link "Engineering The Quiet Architecture Behind Fast Product Teams A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony. Managing Editor May 10, 2026 1 min read 179 views" [ref=e85] [cursor=pointer]:
+            - /url: /posts/quiet-architecture-fast-product-teams
+            - generic [ref=e87]:
+              - text: Engineering
+              - heading "The Quiet Architecture Behind Fast Product Teams" [level=2] [ref=e88]
+              - paragraph [ref=e89]: A practical look at the rituals, systems, and editorial discipline that help software teams ship smarter without adding ceremony.
+              - generic [ref=e90]:
+                - generic [ref=e91]: Managing Editor
+                - generic [ref=e92]: May 10, 2026
+                - generic [ref=e93]: 1 min read
+                - generic [ref=e94]: 179 views
+      - link "View all posts" [ref=e96] [cursor=pointer]:
+        - /url: /posts
+  - contentinfo [ref=e97]:
+    - generic [ref=e98]:
+      - generic [ref=e99]:
+        - paragraph [ref=e100]: The Signal Ledger
+        - paragraph [ref=e101]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e102]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e108] [cursor=pointer]:
+    - img [ref=e109]
+  - alert [ref=e112]
+  - button "Close site menu overlay" [ref=e288]
+  - dialog "Site navigation menu" [ref=e289]:
+    - generic [ref=e290]:
+      - generic [ref=e291]:
+        - paragraph [ref=e292]: The Signal Ledger
+        - paragraph [ref=e293]: Navigation
+      - button "Close site menu" [active] [ref=e294]:
+        - generic [ref=e295]: ×
+    - navigation "Mobile site navigation" [ref=e296]:
+      - generic [ref=e297]:
+        - heading "Main Menu" [level=2] [ref=e298]
+        - link "Home" [ref=e300] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e301]: H
+          - text: Home
+      - generic [ref=e302]:
+        - heading "Blog" [level=2] [ref=e303]
+        - generic [ref=e304]:
+          - link "All Posts" [ref=e305] [cursor=pointer]:
+            - /url: /posts
+            - generic [ref=e306]: A
+            - text: All Posts
+          - link "Trending Posts" [ref=e307] [cursor=pointer]:
+            - /url: /trending
+            - generic [ref=e308]: T
+            - text: Trending Posts
+          - link "Latest Posts" [ref=e309] [cursor=pointer]:
+            - /url: /posts
+            - generic [ref=e310]: L
+            - text: Latest Posts
+          - link "Categories" [ref=e311] [cursor=pointer]:
+            - /url: /categories
+            - generic [ref=e312]: C
+            - text: Categories
+          - link "Tags" [ref=e313] [cursor=pointer]:
+            - /url: /tags
+            - generic [ref=e314]: "#"
+            - text: Tags
+          - link "Search" [ref=e315] [cursor=pointer]:
+            - /url: /search
+            - generic [ref=e316]: S
+            - text: Search
+      - generic [ref=e317]:
+        - heading "Pages" [level=2] [ref=e318]
+        - generic [ref=e319]:
+          - link "About Us" [ref=e320] [cursor=pointer]:
+            - /url: /about
+            - generic [ref=e321]: i
+            - text: About Us
+          - link "Privacy Policy" [ref=e322] [cursor=pointer]:
+            - /url: /privacy-policy
+            - generic [ref=e323]: P
+            - text: Privacy Policy
+          - link "Terms and Conditions" [ref=e324] [cursor=pointer]:
+            - /url: /terms-and-conditions
+            - generic [ref=e325]: §
+            - text: Terms and Conditions
+          - link "Contact Us" [ref=e326] [cursor=pointer]:
+            - /url: /contact
+            - generic [ref=e327]: "@"
+            - text: Contact Us
+      - generic [ref=e328]:
+        - heading "Admin" [level=2] [ref=e329]
+        - generic [ref=e330]:
+          - link "Admin Login" [ref=e331] [cursor=pointer]:
+            - /url: /admin/login
+            - generic [ref=e332]: ↗
+            - text: Admin Login
+          - link "Admin Dashboard" [ref=e333] [cursor=pointer]:
+            - /url: /admin
+            - generic [ref=e334]: D
+            - text: Admin Dashboard
+      - generic [ref=e335]:
+        - heading "Categories" [level=2] [ref=e336]
+        - generic [ref=e337]:
+          - link "Design 1" [ref=e338] [cursor=pointer]:
+            - /url: /category/design
+            - generic [ref=e339]: Design
+            - generic [ref=e340]: "1"
+          - link "Engineering 1" [ref=e341] [cursor=pointer]:
+            - /url: /category/engineering
+            - generic [ref=e342]: Engineering
+            - generic [ref=e343]: "1"
+          - link "Product 1" [ref=e344] [cursor=pointer]:
+            - /url: /category/product
+            - generic [ref=e345]: Product
+            - generic [ref=e346]: "1"
+      - generic [ref=e347]:
+        - heading "Tags" [level=2] [ref=e348]
+        - generic [ref=e349]:
+          - link "#Analytics 1" [ref=e350] [cursor=pointer]:
+            - /url: /tag/analytics
+            - generic [ref=e351]: "#Analytics"
+            - generic [ref=e352]: "1"
+          - link "#Architecture 1" [ref=e353] [cursor=pointer]:
+            - /url: /tag/architecture
+            - generic [ref=e354]: "#Architecture"
+            - generic [ref=e355]: "1"
+          - link "#CMS 2" [ref=e356] [cursor=pointer]:
+            - /url: /tag/cms
+            - generic [ref=e357]: "#CMS"
+            - generic [ref=e358]: "2"
+          - link "#Design 1" [ref=e359] [cursor=pointer]:
+            - /url: /tag/design
+            - generic [ref=e360]: "#Design"
+            - generic [ref=e361]: "1"
+          - link "#Teams 1" [ref=e362] [cursor=pointer]:
+            - /url: /tag/teams
+            - generic [ref=e363]: "#Teams"
+            - generic [ref=e364]: "1"
+      - generic [ref=e365]:
+        - heading "Popular Reads" [level=2] [ref=e366]
+        - generic [ref=e367]:
+          - link "The Quiet Architecture Behind Fast Product Teams" [ref=e368] [cursor=pointer]:
+            - /url: /posts/quiet-architecture-fast-product-teams
+          - link "Why Modern CMS Interfaces Should Feel Like Instruments" [ref=e369] [cursor=pointer]:
+            - /url: /posts/modern-cms-interfaces-instruments
+          - link "Designing Analytics That Editors Actually Trust" [ref=e370] [cursor=pointer]:
+            - /url: /posts/designing-analytics-editors-trust
+          - link "The Quiet Architecture Behind Fast Product Teams" [ref=e371] [cursor=pointer]:
+            - /url: /posts/quiet-architecture-fast-product-teams
+          - paragraph [ref=e372]: Recently viewed posts will appear here.

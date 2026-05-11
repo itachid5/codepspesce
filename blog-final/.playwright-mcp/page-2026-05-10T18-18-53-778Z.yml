@@ -1,0 +1,75 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "The Signal Ledger" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Latest" [ref=e6] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e7] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e8] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e9] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e10] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e11] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e15]:
+        - link "Admin Desk" [ref=e16] [cursor=pointer]:
+          - /url: /admin
+        - navigation [ref=e17]:
+          - link "Posts" [ref=e18] [cursor=pointer]:
+            - /url: /admin/posts
+          - link "Categories" [ref=e19] [cursor=pointer]:
+            - /url: /admin/categories
+          - link "Tags" [ref=e20] [cursor=pointer]:
+            - /url: /admin/tags
+          - link "Site" [ref=e21] [cursor=pointer]:
+            - /url: /
+          - button "Logout" [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - paragraph [ref=e26]: Taxonomy
+          - heading "Tags" [level=1] [ref=e27]
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - generic [ref=e30]: Name
+              - textbox [ref=e31]
+            - generic [ref=e32]:
+              - generic [ref=e33]: Slug
+              - textbox "optional" [ref=e34]
+            - button "Create tag" [ref=e35]
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: "#Analytics"
+            - text: "2"
+            - button "Delete" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: "#Architecture"
+            - text: "1"
+            - button "Delete" [ref=e45]
+          - generic [ref=e46]:
+            - generic [ref=e47]: "#CMS"
+            - text: "2"
+            - button "Delete" [ref=e49]
+          - generic [ref=e50]:
+            - generic [ref=e51]: "#Design"
+            - text: "1"
+            - button "Delete" [ref=e53]
+          - generic [ref=e54]:
+            - generic [ref=e55]: "#Teams"
+            - text: "1"
+            - button "Delete" [ref=e57]
+  - contentinfo [ref=e58]:
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - paragraph [ref=e61]: The Signal Ledger
+        - paragraph [ref=e62]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e63]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e69] [cursor=pointer]:
+    - img [ref=e70]
+  - alert [ref=e73]

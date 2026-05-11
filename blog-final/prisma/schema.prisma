@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  posts        Post[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  posts       Post[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  posts     PostTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Post {
+  id                String            @id @default(cuid())
+  title             String
+  slug              String            @unique
+  excerpt           String
+  content           String
+  featuredImageUrl  String
+  thumbnailUrl      String?
+  status            String            @default("draft")
+  viewCount         Int               @default(0)
+  readTimeMinutes   Int               @default(1)
+  isFeatured        Boolean           @default(false)
+  authorId          String
+  categoryId        String
+  publishedAt       DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  author            User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category          Category          @relation(fields: [categoryId], references: [id])
+  tags              PostTag[]
+  viewEvents        ViewEvent[]
+  dailyMetrics      DailyPostMetric[]
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([viewCount])
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+model ViewEvent {
+  id         String   @id @default(cuid())
+  postId     String
+  visitorKey String
+  ipHash     String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@index([visitorKey, postId, createdAt])
+}
+
+model DailyPostMetric {
+  id        String   @id @default(cuid())
+  postId    String
+  date      DateTime
+  views     Int      @default(0)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, date])
+  @@index([date, views])
+}

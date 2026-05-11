@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.models.category import Category
 from app.models.page import Page
 from app.models.tag import Tag
-from app.services import post_service
+from app.services import category_service, post_service, tag_service
 from app.services.setting_service import get_settings_map
 from app.utils.pagination import Pagination
 
@@ -29,7 +29,14 @@ def public_context(db: Session) -> dict:
 @router.get("/")
 def home(request: Request, db: Session = Depends(get_db)):
     context = public_context(db)
-    context.update({"request": request, "latest_posts": post_service.latest_posts(db, 8), "featured_post": post_service.featured_post(db)})
+    featured = post_service.featured_post(db)
+    context.update(
+        {
+            "request": request,
+            "latest_posts": post_service.latest_posts(db, 8, featured.id if featured else None),
+            "featured_post": featured,
+        }
+    )
     return templates.TemplateResponse("index.html", context)
 
 
@@ -39,6 +46,20 @@ def all_posts(request: Request, page: int = Query(1, ge=1), db: Session = Depend
     context = public_context(db)
     context.update({"request": request, "posts": post_service.paginated_posts(db, pagination.offset, pagination.per_page), "pagination": pagination})
     return templates.TemplateResponse("posts.html", context)
+
+
+@router.get("/categories")
+def categories_index(request: Request, db: Session = Depends(get_db)):
+    context = public_context(db)
+    context.update({"request": request, "category_items": category_service.categories_with_published_counts(db)})
+    return templates.TemplateResponse("categories.html", context)
+
+
+@router.get("/tags")
+def tags_index(request: Request, db: Session = Depends(get_db)):
+    context = public_context(db)
+    context.update({"request": request, "tag_items": tag_service.tags_with_published_counts(db)})
+    return templates.TemplateResponse("tags.html", context)
 
 
 @router.get("/post/{slug}")

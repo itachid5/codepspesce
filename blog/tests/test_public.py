@@ -2,7 +2,10 @@ import re
 from uuid import uuid4
 
 from bs4 import BeautifulSoup
+from sqlalchemy import select
 
+from app.core.database import SessionLocal
+from app.models.post import Post
 from app.services.post_service import estimate_read_time
 
 
@@ -38,8 +41,20 @@ def create_post(admin_client, *, title, slug, category_id, tag_id, summary="A se
     assert response.status_code == 303
 
 
+def set_post_metadata(slug, *, featured_image_url="", views_count=0):
+    db = SessionLocal()
+    try:
+        post = db.scalar(select(Post).where(Post.slug == slug))
+        assert post is not None
+        post.featured_image_url = featured_image_url
+        post.views_count = views_count
+        db.commit()
+    finally:
+        db.close()
+
+
 def test_homepage_and_static_pages_load(client):
-    for path in ["/", "/posts", "/about", "/contact", "/privacy", "/terms", "/search?q=missing"]:
+    for path in ["/", "/posts", "/categories", "/tags", "/about", "/contact", "/privacy", "/terms", "/search?q=missing"]:
         response = client.get(path)
         assert response.status_code == 200
         assert "Blog" in response.text or "Search" in response.text
@@ -87,6 +102,46 @@ def test_create_taxonomy_post_search_and_detail(admin_client):
     assert tag.status_code == 200
     assert post_title in category.text
     assert post_title in tag.text
+
+    categories = admin_client.get("/categories")
+    tags = admin_client.get("/tags")
+    assert categories.status_code == 200
+    assert tags.status_code == 200
+    assert category_name in categories.text
+    assert tag_name in tags.text
+    assert "1 post" in categories.text
+    assert "1 post" in tags.text
+
+
+def test_view_counts_featured_images_and_trending(admin_client):
+    suffix = uuid4().hex[:8]
+    category_id, tag_id = create_taxonomy(admin_client, f"Views {suffix}", f"Images {suffix}")
+    low_slug = f"low-views-{suffix}"
+    high_slug = f"high-views-{suffix}"
+    create_post(admin_client, title=f"Low Views {suffix}", slug=low_slug, category_id=category_id, tag_id=tag_id, summary=f"Low image summary {suffix}")
+    create_post(admin_client, title=f"High Views {suffix}", slug=high_slug, category_id=category_id, tag_id=tag_id, summary=f"High image summary {suffix}")
+    low_image = f"https://cdn.example.test/{low_slug}.png"
+    high_image = f"https://cdn.example.test/{high_slug}.png"
+    set_post_metadata(low_slug, featured_image_url=low_image, views_count=1_000_000)
+    set_post_metadata(high_slug, featured_image_url=high_image, views_count=1_000_001)
+
+    detail = admin_client.get(f"/post/{high_slug}")
+    assert detail.status_code == 200
+    assert high_image in detail.text
+    assert "1000002 views" in detail.text
+
+    for path in ["/", "/posts", f"/category/views-{suffix}", f"/tag/images-{suffix}", f"/search?q={suffix}"]:
+        response = admin_client.get(path)
+        assert response.status_code == 200
+        assert high_image in response.text
+        assert "1000002 views" in response.text
+
+    home_soup = BeautifulSoup(admin_client.get("/").text, "html.parser")
+    trending = [item.get_text(" ") for item in home_soup.select(".trend")]
+    assert trending
+    high_index = next(index for index, text in enumerate(trending) if f"High Views {suffix}" in text)
+    low_index = next(index for index, text in enumerate(trending) if f"Low Views {suffix}" in text)
+    assert high_index < low_index
 
 
 def test_all_posts_pagination_homepage_limit_and_related_posts(admin_client):

@@ -1,1 +1,22 @@
-{% extends "admin/base.html" %}{% block title %}Pages{% endblock %}{% block header %}Pages{% endblock %}{% block content %}<section class="panel"><h2>Create / Update Page</h2><form method="post" class="form-grid"><input type="hidden" name="page_id" id="page_id"><label>Title<input name="title" id="page_title" required></label><label>Slug<input name="slug" id="page_slug"></label><label>Content<textarea name="content" id="page_content" rows="8" required></textarea></label><label>Status<select name="status" id="page_status"><option value="draft">Draft</option><option value="published">Published</option></select></label><button>Save Page</button></form></section><section class="panel"><h2>Pages</h2><table><tr><th>Title</th><th>Slug</th><th>Status</th><th></th></tr>{% for page in pages %}<tr><td>{{ page.title }}</td><td>{{ page.slug }}</td><td><span class="badge {{ page.status }}">{{ page.status }}</span></td><td><form method="post" action="/admin/pages/{{ page.id }}/delete" data-confirm><button class="link-button">Delete</button></form></td></tr>{% else %}<tr><td colspan="4">No pages yet.</td></tr>{% endfor %}</table></section>{% endblock %}
+{% extends "admin/base.html" %}
+{% block title %}Pages{% endblock %}
+{% block header %}Pages{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2>Create / Update Page</h2>
+  <form method="post" class="form-grid"><input type="hidden" name="page_id" id="page_id"><label>Title<input name="title" id="page_title" required></label><label>Slug<input name="slug" id="page_slug"></label><label>Content<textarea name="content" id="page_content" rows="8" required></textarea></label><label>Status<select name="status" id="page_status"><option value="draft">Draft</option><option value="published">Published</option></select></label><button>Save Page</button></form>
+</section>
+<section class="panel">
+  <h2>Pages</h2>
+  <table>
+    <thead><tr><th>Title</th><th>Slug</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for page in pages %}
+      <tr><td data-label="Title">{{ page.title }}</td><td data-label="Slug">{{ page.slug }}</td><td data-label="Status"><span class="badge {{ page.status }}">{{ page.status }}</span></td><td data-label="Actions"><div class="actions"><form method="post" action="/admin/pages/{{ page.id }}/delete" data-confirm><button class="link-button">Delete</button></form></div></td></tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="4" class="empty-state">No pages yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

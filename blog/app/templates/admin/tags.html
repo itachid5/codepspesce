@@ -1,1 +1,18 @@
-{% extends "admin/base.html" %}{% block title %}Tags{% endblock %}{% block header %}Tags{% endblock %}{% block content %}<section class="panel"><h2>Add Tag</h2><form method="post" class="form-grid compact"><label>Name<input name="name" required></label><button>Add Tag</button></form></section><section class="panel"><h2>All Tags</h2><table><tr><th>Name</th><th>Slug</th><th></th></tr>{% for tag in tags %}<tr><td>{{ tag.name }}</td><td>{{ tag.slug }}</td><td><form method="post" action="/admin/tags/{{ tag.id }}/delete" data-confirm><button class="link-button">Delete</button></form></td></tr>{% else %}<tr><td colspan="3">No tags yet.</td></tr>{% endfor %}</table></section>{% endblock %}
+{% extends "admin/base.html" %}
+{% block title %}Tags{% endblock %}
+{% block header %}Tags{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2>Add Tag</h2>
+  <form method="post" class="form-grid compact"><label>Name<input name="name" required></label><button>Add Tag</button></form>
+</section>
+<section class="panel">
+  <h2>All Tags</h2>
+  <table class="tags-table">
+    <thead><tr><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for tag in tags %}<tr><td>{{ tag.name }}</td><td>{{ tag.slug }}</td><td><form method="post" action="/admin/tags/{{ tag.id }}/delete" data-confirm><button class="link-button">Delete</button></form></td></tr>{% else %}<tr class="empty-row"><td colspan="3" class="empty-state">No tags yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

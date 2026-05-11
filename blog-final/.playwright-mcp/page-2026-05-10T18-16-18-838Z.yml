@@ -1,0 +1,76 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "The Signal Ledger" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Latest" [ref=e6] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e7] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e8] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e9] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e10] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e11] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e12]:
+    - article [ref=e13]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - paragraph [ref=e17]: Design
+          - heading "Smoke Test Dispatch" [level=1] [ref=e18]
+          - paragraph [ref=e19]: A short admin smoke test post created through the dashboard.
+          - generic [ref=e21]:
+            - generic [ref=e22]: Managing Editor
+            - generic [ref=e23]: May 10, 2026
+            - generic [ref=e24]: 1 min read
+            - generic [ref=e25]: 0 views
+        - complementary [ref=e26]:
+          - heading "Trending now" [level=2] [ref=e27]
+          - link "#1 · Design Why Modern CMS Interfaces Should Feel Like Instruments 968 views · 1 min" [ref=e29] [cursor=pointer]:
+            - /url: /posts/modern-cms-interfaces-instruments
+            - generic [ref=e31]:
+              - paragraph [ref=e32]: "#1 · Design"
+              - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=3] [ref=e33]
+              - paragraph [ref=e34]: 968 views · 1 min
+      - paragraph [ref=e37]: This is a smoke test article created through the admin dashboard. It verifies post creation, publishing, read time calculation, category selection, and tag assignment without calling the external media upload API.
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - heading "Related reading" [level=2] [ref=e40]
+        - generic [ref=e41]: Same signal
+      - generic [ref=e42]:
+        - article [ref=e43]:
+          - link "Design Why Modern CMS Interfaces Should Feel Like Instruments Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing. Managing Editor May 10, 2026 1 min read 968 views" [ref=e44] [cursor=pointer]:
+            - /url: /posts/modern-cms-interfaces-instruments
+            - generic [ref=e46]:
+              - text: Design
+              - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=2] [ref=e47]
+              - paragraph [ref=e48]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+              - generic [ref=e49]:
+                - generic [ref=e50]: Managing Editor
+                - generic [ref=e51]: May 10, 2026
+                - generic [ref=e52]: 1 min read
+                - generic [ref=e53]: 968 views
+        - article [ref=e54]:
+          - link "Product Designing Analytics That Editors Actually Trust View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest. Managing Editor May 10, 2026 1 min read 837 views" [ref=e55] [cursor=pointer]:
+            - /url: /posts/designing-analytics-editors-trust
+            - generic [ref=e57]:
+              - text: Product
+              - heading "Designing Analytics That Editors Actually Trust" [level=2] [ref=e58]
+              - paragraph [ref=e59]: View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest.
+              - generic [ref=e60]:
+                - generic [ref=e61]: Managing Editor
+                - generic [ref=e62]: May 10, 2026
+                - generic [ref=e63]: 1 min read
+                - generic [ref=e64]: 837 views
+  - contentinfo [ref=e65]:
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - paragraph [ref=e68]: The Signal Ledger
+        - paragraph [ref=e69]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e70]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e76] [cursor=pointer]:
+    - img [ref=e77]

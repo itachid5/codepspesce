@@ -1,0 +1,76 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "The Signal Ledger" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - link "Latest" [ref=e6] [cursor=pointer]:
+          - /url: /posts
+        - link "Design" [ref=e7] [cursor=pointer]:
+          - /url: /category/design
+        - link "Engineering" [ref=e8] [cursor=pointer]:
+          - /url: /category/engineering
+        - link "Product" [ref=e9] [cursor=pointer]:
+          - /url: /category/product
+        - link "Search" [ref=e10] [cursor=pointer]:
+          - /url: /search
+      - link "Admin" [ref=e11] [cursor=pointer]:
+        - /url: /admin
+  - main [ref=e12]:
+    - article [ref=e13]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - paragraph [ref=e17]: Design
+          - heading "Why Modern CMS Interfaces Should Feel Like Instruments" [level=1] [ref=e18]
+          - paragraph [ref=e19]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+          - generic [ref=e21]:
+            - generic [ref=e22]: Managing Editor
+            - generic [ref=e23]: May 10, 2026
+            - generic [ref=e24]: 1 min read
+            - generic [ref=e25]: 967 views
+        - complementary [ref=e26]:
+          - heading "Trending now" [level=2] [ref=e27]
+          - generic [ref=e28]:
+            - link "#1 · Product Designing Analytics That Editors Actually Trust 837 views · 1 min" [ref=e29] [cursor=pointer]:
+              - /url: /posts/designing-analytics-editors-trust
+              - generic [ref=e31]:
+                - paragraph [ref=e32]: "#1 · Product"
+                - heading "Designing Analytics That Editors Actually Trust" [level=3] [ref=e33]
+                - paragraph [ref=e34]: 837 views · 1 min
+            - link "#2 · Engineering The Quiet Architecture Behind Fast Product Teams 179 views · 1 min" [ref=e35] [cursor=pointer]:
+              - /url: /posts/quiet-architecture-fast-product-teams
+              - generic [ref=e37]:
+                - paragraph [ref=e38]: "#2 · Engineering"
+                - heading "The Quiet Architecture Behind Fast Product Teams" [level=3] [ref=e39]
+                - paragraph [ref=e40]: 179 views · 1 min
+      - generic [ref=e42]:
+        - paragraph [ref=e43]: Publishing tools work best when they are calm, precise, and responsive enough to disappear behind the writing.
+        - heading "Signal" [level=2] [ref=e44]
+        - paragraph [ref=e45]: "Great publishing systems do not begin with decoration. They begin with rhythm: a reliable way to draft, review, publish, measure, and improve. This article explores the operational choices that turn a blog into a living newsroom."
+        - heading "Practice" [level=2] [ref=e46]
+        - paragraph [ref=e47]: The teams that move fastest tend to protect the reader experience first. They measure views without obsessing over noise, keep taxonomy simple, and make the writing interface direct enough that publishing feels effortless.
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - heading "Related reading" [level=2] [ref=e50]
+        - generic [ref=e51]: Same signal
+      - article [ref=e53]:
+        - link "Product Designing Analytics That Editors Actually Trust View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest. Managing Editor May 10, 2026 1 min read 837 views" [ref=e54] [cursor=pointer]:
+          - /url: /posts/designing-analytics-editors-trust
+          - generic [ref=e56]:
+            - text: Product
+            - heading "Designing Analytics That Editors Actually Trust" [level=2] [ref=e57]
+            - paragraph [ref=e58]: View counts are only useful when they are understandable. Here is a pattern for lightweight editorial analytics that stays honest.
+            - generic [ref=e59]:
+              - generic [ref=e60]: Managing Editor
+              - generic [ref=e61]: May 10, 2026
+              - generic [ref=e62]: 1 min read
+              - generic [ref=e63]: 837 views
+  - contentinfo [ref=e64]:
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - paragraph [ref=e67]: The Signal Ledger
+        - paragraph [ref=e68]: Independent-feeling technology journalism for teams who care about craft, systems, and durable product decisions.
+      - generic [ref=e69]: Built with Next.js, Prisma, and a deliberately quiet publishing workflow.
+  - button "Open Next.js Dev Tools" [ref=e75] [cursor=pointer]:
+    - img [ref=e76]
+  - alert [ref=e79]
