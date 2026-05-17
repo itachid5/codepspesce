@@ -6,21 +6,23 @@ from app.models.tag import Tag
 from app.utils.slug import slugify
 
 
-def create_tag(db: Session, name: str, show_in_menu: bool = False, menu_order: int = 0) -> Tag:
-    tag = Tag(name=name.strip(), slug=unique_tag_slug(db, name), show_in_menu=show_in_menu, menu_order=menu_order)
+def create_tag(db: Session, name: str, show_in_menu: bool = False, menu_order: int = 0, show_on_home: bool = False, home_order: int = 0) -> Tag:
+    tag = Tag(name=name.strip(), slug=unique_tag_slug(db, name), show_in_menu=show_in_menu, menu_order=menu_order, show_on_home=show_on_home, home_order=home_order)
     db.add(tag)
     db.commit()
     db.refresh(tag)
     return tag
 
 
-def update_tag(db: Session, tag: Tag, name: str, show_in_menu: bool = False, menu_order: int = 0) -> Tag:
+def update_tag(db: Session, tag: Tag, name: str, show_in_menu: bool = False, menu_order: int = 0, show_on_home: bool = False, home_order: int = 0) -> Tag:
     clean_name = name.strip()
     if clean_name and clean_name != tag.name:
         tag.name = clean_name
         tag.slug = unique_tag_slug(db, clean_name, tag.id)
     tag.show_in_menu = show_in_menu
     tag.menu_order = menu_order
+    tag.show_on_home = show_on_home
+    tag.home_order = home_order
     db.commit()
     db.refresh(tag)
     return tag
@@ -28,6 +30,10 @@ def update_tag(db: Session, tag: Tag, name: str, show_in_menu: bool = False, men
 
 def menu_tags(db: Session) -> list[Tag]:
     return db.scalars(select(Tag).where(Tag.show_in_menu.is_(True)).order_by(Tag.menu_order, Tag.name)).all()
+
+
+def home_tags(db: Session) -> list[Tag]:
+    return db.scalars(select(Tag).where(Tag.show_on_home.is_(True)).order_by(Tag.home_order, Tag.name)).all()
 
 
 def tags_with_published_counts(db: Session) -> list[tuple[Tag, int]]:

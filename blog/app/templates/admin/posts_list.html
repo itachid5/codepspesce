@@ -12,7 +12,7 @@
         <td data-label="Title">{{ post.title }}</td>
         <td data-label="Category">{{ post.category.name if post.category else 'Uncategorized' }}</td>
         <td data-label="Status"><span class="badge {{ post.status }}">{{ post.status }}</span></td>
-        <td data-label="Views">{{ post.views_count }}</td>
+        <td data-label="Views">{{ format_count(post.views_count) }}</td>
         <td data-label="Actions"><div class="actions"><a href="/admin/posts/{{ post.id }}/edit">Edit</a><form method="post" action="/admin/posts/{{ post.id }}/delete" class="inline" data-confirm><button class="link-button">Delete</button></form></div></td>
       </tr>
       {% else %}

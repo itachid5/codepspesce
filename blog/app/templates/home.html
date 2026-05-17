@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta name="description" content="{{ settings.get('site_description', 'A modern professional blog built with FastAPI.') }}">
+  <title>{{ settings.get('site_name', 'Blog Website') }}</title>
+
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem('homepage-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      document.documentElement.classList.toggle('light', theme !== 'dark');
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@200,0..1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'tertiary': '#000000',
+            'surface-container-lowest': '#ffffff',
+            'on-tertiary-container': '#838484',
+            'on-tertiary-fixed': '#1a1c1c',
+            'outline': '#7e7576',
+            'surface-container-low': '#f6f3f2',
+            'surface-container-high': '#eae7e7',
+            'secondary': '#5e5e5e',
+            'on-secondary-container': '#646464',
+            'surface-variant': '#e5e2e1',
+            'on-surface': '#1c1b1b',
+            'on-surface-variant': '#4c4546',
+            'on-tertiary-fixed-variant': '#454747',
+            'surface': '#fcf9f8',
+            'on-background': '#1c1b1b',
+            'tertiary-fixed-dim': '#c6c6c7',
+            'primary-container': '#1b1b1b',
+            'inverse-primary': '#c6c6c6',
+            'secondary-fixed': '#e4e2e2',
+            'on-primary': '#ffffff',
+            'primary-fixed-dim': '#c6c6c6',
+            'surface-tint': '#5e5e5e',
+            'secondary-fixed-dim': '#c8c6c6',
+            'on-error': '#ffffff',
+            'primary': '#000000',
+            'on-tertiary': '#ffffff',
+            'outline-variant': '#cfc4c5',
+            'on-primary-fixed-variant': '#474747',
+            'on-primary-container': '#848484',
+            'on-primary-fixed': '#1b1b1b',
+            'secondary-container': '#e4e2e2',
+            'error-container': '#ffdad6',
+            'on-secondary-fixed-variant': '#474747',
+            'tertiary-fixed': '#e2e2e2',
+            'error': '#ba1a1a',
+            'on-secondary': '#ffffff',
+            'surface-container': '#f0eded',
+            'on-secondary-fixed': '#1b1c1c',
+            'surface-bright': '#fcf9f8',
+            'background': '#fcf9f8',
+            'on-error-container': '#93000a',
+            'surface-dim': '#dcd9d9',
+            'inverse-surface': '#313030',
+            'inverse-on-surface': '#f3f0ef',
+            'primary-fixed': '#e2e2e2',
+            'surface-container-highest': '#e5e2e1',
+            'tertiary-container': '#1a1c1c'
+          },
+          borderRadius: {
+            DEFAULT: '0.25rem',
+            lg: '0.5rem',
+            xl: '0.75rem',
+            full: '9999px'
+          },
+          spacing: {
+            'container-max': '1200px',
+            'unit': '8px',
+            'gutter': '24px',
+            'margin-mobile': '20px',
+            'margin-desktop': '64px'
+          },
+          fontFamily: {
+            'body-md': ['Inter', 'sans-serif'],
+            'body-lg': ['Inter', 'sans-serif'],
+            'display-xl': ['Playfair Display', 'serif'],
+            'headline-md': ['Playfair Display', 'serif'],
+            'label-caps': ['Inter', 'sans-serif'],
+            'caption': ['Inter', 'sans-serif'],
+            'headline-sm': ['Playfair Display', 'serif'],
+            'display-lg': ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { display: none; }
+    * { -ms-overflow-style: none; scrollbar-width: none; }
+    body { min-height: 100dvh; overflow-x: hidden; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+    input[type="text"]:focus, input[type="search"]:focus { outline: none !important; box-shadow: none !important; }
+    input[type="text"]::-ms-clear, input[type="text"]::-ms-reveal { display: none; width: 0; height: 0; }
+    input[type="search"]::-webkit-search-decoration,
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-results-button,
+    input[type="search"]::-webkit-search-results-decoration { display: none; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+</head>
+{% set site_name = settings.get('site_name', 'Blog Website') %}
+{% set site_description = settings.get('site_description', 'A modern professional blog built with FastAPI.') %}
+{% set selected_home_categories = home_categories | default([]) %}
+{% set selected_home_tags = home_tags | default([]) %}
+{% set sidebar_categories = menu_categories | default([]) %}
+{% set sidebar_tags = menu_tags | default([]) %}
+{% set overlay_use_home = (selected_home_categories | length) + (selected_home_tags | length) > 0 %}
+{% set overlay_categories = selected_home_categories if overlay_use_home else sidebar_categories %}
+{% set overlay_tags = selected_home_tags if overlay_use_home else sidebar_tags %}
+{% set hero_post = featured_post if featured_post else ((latest_posts | first) if latest_posts else none) %}
+{% macro meta_line(post) -%}
+  <div class="flex flex-wrap items-center gap-2 text-[10px] text-outline dark:text-neutral-600 font-label-caps uppercase tracking-widest">
+    <span>Published {{ published_time_label(post.published_at) }}</span>
+    <span class="w-1 h-1 rounded-full bg-outline-variant dark:bg-neutral-700"></span>
+    <span>{{ estimate_read_time(post.content) }} min read</span>
+    <span class="w-1 h-1 rounded-full bg-outline-variant dark:bg-neutral-700"></span>
+    <span>{{ format_views(post.views_count) }}</span>
+  </div>
+{%- endmacro %}
+{% macro post_card(post, image_class='') -%}
+  {% if post and post.featured_image_url %}
+  <article class="post-card flex flex-col gap-4 group">
+    <a href="/post/{{ post.slug }}" class="w-full aspect-[3/2] overflow-hidden bg-surface-container-low dark:bg-neutral-900 rounded-sm block">
+      <img alt="{{ post.title }}" class="w-full h-full object-cover {{ image_class }} transition-transform duration-500 group-hover:scale-105" src="{{ post.featured_image_url }}" loading="lazy">
+    </a>
+    <div>
+      {% if post.category %}
+      <a href="/category/{{ post.category.slug }}" class="font-label-caps text-[10px] text-on-surface-variant dark:text-neutral-500 uppercase tracking-widest mb-3 block hover:text-on-surface dark:hover:text-white transition-colors">{{ post.category.name }}</a>
+      {% endif %}
+      <h3 class="font-headline-sm text-lg md:text-xl text-on-surface dark:text-neutral-100 mb-2 group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors tracking-tight font-semibold leading-tight">
+        <a href="/post/{{ post.slug }}">{{ post.title }}</a>
+      </h3>
+      {% if post.summary %}
+      <p class="font-body-md text-sm text-on-surface-variant dark:text-neutral-400 mb-4 leading-relaxed line-clamp-3">{{ post.summary }}</p>
+      {% endif %}
+      {{ meta_line(post) }}
+    </div>
+  </article>
+  {% endif %}
+{%- endmacro %}
+<body class="bg-background dark:bg-neutral-950 text-on-background dark:text-neutral-50 min-h-screen flex flex-col antialiased relative transition-colors duration-300">
+  <header class="bg-white/70 dark:bg-neutral-950/70 backdrop-blur-md text-on-surface dark:text-neutral-50 font-label-caps uppercase w-full top-0 sticky z-[40] border-b border-surface-container-high dark:border-neutral-800 transition-colors duration-300">
+    <div class="flex justify-between items-center h-14 px-6 md:px-12 max-w-[1200px] mx-auto">
+      <a class="text-lg font-black tracking-tighter text-on-surface dark:text-white truncate max-w-[48vw]" href="/">{{ site_name }}</a>
+      <nav class="hidden md:flex space-x-6 text-[10px] tracking-widest">
+        <a class="text-on-surface dark:text-neutral-100 border-b border-on-surface dark:border-neutral-100 pb-1 hover:text-on-surface-variant dark:hover:text-neutral-400 transition-colors" href="/posts">Archive</a>
+        <a class="text-on-surface-variant dark:text-neutral-400 hover:text-on-surface dark:hover:text-neutral-100 transition-colors" href="/categories">Categories</a>
+        <a class="text-on-surface-variant dark:text-neutral-400 hover:text-on-surface dark:hover:text-neutral-100 transition-colors" href="/tags">Tags</a>
+        <a class="text-on-surface-variant dark:text-neutral-400 hover:text-on-surface dark:hover:text-neutral-100 transition-colors" href="/about">About</a>
+      </nav>
+      <div class="header-controls flex items-center space-x-4">
+        <button id="open-search-btn" class="text-on-surface dark:text-neutral-100 hover:text-on-surface-variant dark:hover:text-neutral-400 transition-colors focus:outline-none flex items-center" type="button" aria-label="Search" aria-expanded="false" data-open-search>
+          <span class="material-symbols-outlined text-xl">search</span>
+        </button>
+        <button id="theme-toggle-btn" class="text-on-surface dark:text-neutral-100 hover:text-on-surface-variant dark:hover:text-neutral-400 transition-colors focus:outline-none flex items-center" type="button" aria-label="Toggle Dark Mode" data-theme-toggle>
+          <span class="material-symbols-outlined text-xl" id="theme-icon">dark_mode</span>
+        </button>
+        <button id="mobile-menu-btn" class="md:hidden text-on-surface dark:text-neutral-100 hover:text-on-surface-variant dark:hover:text-neutral-400 transition-colors focus:outline-none flex items-center" type="button" aria-label="Menu" aria-expanded="false" data-open-menu>
+          <span class="material-symbols-outlined text-[22px]">menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="search-overlay" class="fixed inset-0 bg-surface-container-lowest dark:bg-neutral-950 z-[70] opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out flex flex-col" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="search-overlay-title" data-search-overlay>
+    <div class="flex justify-between items-center h-14 px-6 md:px-12 max-w-[1200px] w-full mx-auto shrink-0 border-b border-surface-container-high dark:border-neutral-800 md:border-none">
+      <span id="search-overlay-title" class="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant dark:text-neutral-400">Search {{ site_name }}</span>
+      <button id="close-search-btn" class="text-on-surface dark:text-neutral-100 hover:text-secondary dark:hover:text-neutral-400 transition-colors focus:outline-none flex items-center" aria-label="Close Search">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+    <form action="/search" id="search-form" class="flex-grow flex flex-col justify-center items-center px-6 md:px-12 w-full max-w-[800px] mx-auto pb-20">
+      <div class="w-full relative mb-10 md:mb-12">
+        <input id="search-input" name="q" type="search" placeholder="Type to search..." autocomplete="off" class="w-full bg-transparent border-b border-surface-container-highest dark:border-neutral-700 px-0 py-2 md:py-4 font-display-lg text-xl md:text-4xl text-on-surface dark:text-white placeholder:text-outline-variant dark:placeholder:text-neutral-600 text-center outline-none focus:outline-none focus:ring-0 border-t-0 border-l-0 border-r-0 focus:border-on-surface dark:focus:border-neutral-300 transition-colors duration-300">
+      </div>
+      <div class="flex flex-col items-center w-full opacity-0 translate-y-4 transition-all duration-500 delay-100" id="search-tags">
+        <span class="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant dark:text-neutral-500 mb-5">Popular Topics</span>
+        <div class="flex flex-wrap justify-center gap-3">
+          {% for topic_tag in overlay_tags[:4] %}
+          <a href="/tag/{{ topic_tag.slug }}" class="font-label-caps text-[10px] uppercase text-on-surface dark:text-neutral-200 border border-surface-container-high dark:border-neutral-800 px-4 py-2 rounded-full hover:bg-surface-container-high dark:hover:bg-neutral-800 transition-colors tracking-widest">#{{ topic_tag.name }}</a>
+          {% endfor %}
+          {% for topic_category in overlay_categories[:4] %}
+          <a href="/category/{{ topic_category.slug }}" class="font-label-caps text-[10px] uppercase text-on-surface dark:text-neutral-200 border border-surface-container-high dark:border-neutral-800 px-4 py-2 rounded-full hover:bg-surface-container-high dark:hover:bg-neutral-800 transition-colors tracking-widest">{{ topic_category.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="mobile-overlay" class="fixed inset-0 bg-black/45 dark:bg-black/70 backdrop-blur-[2px] z-[50] opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out"></div>
+  <aside id="drawer" class="fixed top-0 left-0 h-full w-[82vw] max-w-[320px] bg-background dark:bg-neutral-950 z-[60] transform -translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] border-r border-surface-container-high dark:border-neutral-800 flex flex-col shadow-xl" aria-hidden="true">
+    <div class="flex items-center justify-between px-5 py-5 border-b border-surface-container-high dark:border-neutral-800 shrink-0">
+      <a href="/" class="font-label-caps text-[10px] tracking-[0.28em] uppercase text-on-surface dark:text-white truncate">{{ site_name }}</a>
+      <button id="close-menu-btn" class="text-on-surface-variant dark:text-neutral-400 hover:text-on-surface dark:hover:text-white transition-colors focus:outline-none flex items-center" aria-label="Close Menu">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5 py-7 flex flex-col">
+      <div class="mb-8">
+        <p class="font-label-caps text-[10px] uppercase tracking-[0.22em] text-outline dark:text-neutral-600 mb-4">Navigation</p>
+        <nav class="flex flex-col">
+          <a href="/" class="group border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">Home</span></a>
+          <a href="/posts" class="group border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">All Posts</span></a>
+          <button id="categories-btn" class="w-full border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between text-left focus:outline-none" type="button" aria-expanded="false" aria-controls="categories-list" data-drawer-toggle>
+            <span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight">Categories</span>
+            <span id="categories-icon" class="material-symbols-outlined text-[18px] text-outline dark:text-neutral-600 transition-transform duration-300">expand_more</span>
+          </button>
+          <div id="categories-list" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <div class="flex flex-col gap-3 pb-5 pt-1 border-b border-surface-container-high dark:border-neutral-800">
+              {% for menu_category in sidebar_categories %}
+              <a href="/category/{{ menu_category.slug }}" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface-variant dark:text-neutral-400 hover:text-on-surface dark:hover:text-white transition-colors">{{ menu_category.name }}</a>
+              {% endfor %}
+              <a href="/categories" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface dark:text-white hover:text-secondary dark:hover:text-neutral-300 transition-colors">All Categories</a>
+            </div>
+          </div>
+          <button id="tags-btn" class="w-full py-4 flex items-center justify-between text-left focus:outline-none" type="button" aria-expanded="false" aria-controls="tags-list" data-drawer-toggle>
+            <span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight">Tags</span>
+            <span id="tags-icon" class="material-symbols-outlined text-[18px] text-outline dark:text-neutral-600 transition-transform duration-300">expand_more</span>
+          </button>
+          <div id="tags-list" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <div class="flex flex-col gap-3 pb-5 pt-1 border-b border-surface-container-high dark:border-neutral-800">
+              {% for menu_tag in sidebar_tags %}
+              <a href="/tag/{{ menu_tag.slug }}" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface-variant dark:text-neutral-400 hover:text-on-surface dark:hover:text-white transition-colors">#{{ menu_tag.name }}</a>
+              {% endfor %}
+              <a href="/tags" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface dark:text-white hover:text-secondary dark:hover:text-neutral-300 transition-colors">All Tags</a>
+            </div>
+          </div>
+          <a href="/about" class="group py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">About</span></a>
+          <a href="/contact" class="group border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">Contact</span></a>
+          <a href="/privacy" class="group border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">Privacy</span></a>
+          <a href="/terms" class="group border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">Terms</span></a>
+          <a href="/admin/login" class="group border-t border-surface-container-high dark:border-neutral-800 py-4 flex items-center justify-between"><span class="font-body-md text-[15px] font-medium text-on-surface dark:text-white tracking-tight group-hover:text-secondary dark:group-hover:text-neutral-300 transition-colors">Admin</span></a>
+        </nav>
+      </div>
+      {% if hero_post %}
+      <div class="mt-auto border border-surface-container-high dark:border-neutral-800 rounded-sm p-4 bg-white/30 dark:bg-neutral-900/30">
+        <p class="font-label-caps text-[10px] uppercase tracking-[0.20em] text-outline dark:text-neutral-600 mb-3">Featured Essay</p>
+        <h3 class="font-headline-sm text-lg text-on-surface dark:text-white leading-tight mb-2">{{ hero_post.title }}</h3>
+        {% if hero_post.summary %}<p class="font-body-md text-xs text-on-surface-variant dark:text-neutral-400 leading-relaxed mb-4 line-clamp-3">{{ hero_post.summary }}</p>{% endif %}
+        <a href="/post/{{ hero_post.slug }}" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface dark:text-white inline-flex items-center">Read<span class="material-symbols-outlined text-sm ml-1">arrow_forward</span></a>
+      </div>
+      {% endif %}
+    </div>
+    <div class="px-5 py-4 border-t border-surface-container-high dark:border-neutral-800 flex items-center justify-between shrink-0">
+      <a href="/posts" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface-variant dark:text-neutral-500 hover:text-on-surface dark:hover:text-white transition-colors">Archive</a>
+      <a href="/contact" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface-variant dark:text-neutral-500 hover:text-on-surface dark:hover:text-white transition-colors">Contact</a>
+    </div>
+  </aside>
+
+  <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12">
+    {% if hero_post and hero_post.featured_image_url %}
+    <article class="mb-10 md:mb-20">
+      <a href="/post/{{ hero_post.slug }}" class="w-full aspect-[4/5] md:aspect-[16/9] mb-6 overflow-hidden bg-surface-container-low dark:bg-neutral-900 rounded-sm block">
+        <img alt="{{ hero_post.title }}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src="{{ hero_post.featured_image_url }}">
+      </a>
+      <div class="max-w-[760px] mx-auto md:mx-0">
+        {% if hero_post.category %}
+        <a href="/category/{{ hero_post.category.slug }}" class="font-label-caps text-[10px] text-on-surface dark:text-neutral-300 bg-surface-container-high dark:bg-neutral-800 px-2 py-1 uppercase mb-4 inline-block tracking-widest rounded-sm hover:text-secondary dark:hover:text-white transition-colors">{{ hero_post.category.name }}</a>
+        {% endif %}
+        <h1 class="font-display-lg text-3xl md:text-5xl text-on-surface dark:text-white mb-4 tracking-tight font-medium leading-[1.15]"><a href="/post/{{ hero_post.slug }}">{{ hero_post.title }}</a></h1>
+        {% if hero_post.summary %}<p class="font-body-md text-base md:text-lg text-on-surface-variant dark:text-neutral-400 mb-5 leading-relaxed">{{ hero_post.summary }}</p>{% endif %}
+        <div class="mb-8">{{ meta_line(hero_post) }}</div>
+        <a class="font-label-caps text-[10px] text-on-surface dark:text-white uppercase border-b border-primary dark:border-white pb-1 hover:text-secondary dark:hover:text-neutral-300 transition-colors inline-flex items-center tracking-widest" href="/post/{{ hero_post.slug }}">Read Essay<span class="material-symbols-outlined ml-1 text-sm">arrow_forward</span></a>
+      </div>
+    </article>
+    {% else %}
+    <section class="mb-10 md:mb-20 py-20 border-y border-surface-container-high dark:border-neutral-800 text-center">
+      <h1 class="font-display-lg text-3xl md:text-5xl text-on-surface dark:text-white mb-4 tracking-tight font-medium">{{ site_name }}</h1>
+      <p class="font-body-md text-on-surface-variant dark:text-neutral-400 max-w-xl mx-auto">{{ site_description }}</p>
+    </section>
+    {% endif %}
+
+    <div class="h-px w-full bg-surface-container-highest dark:bg-neutral-800 mb-10 md:mb-20"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+      <section class="flex flex-col h-full">
+        <h2 class="font-label-caps text-[10px] text-on-surface-variant dark:text-neutral-400 uppercase tracking-widest mb-6 md:mb-8 flex items-center"><span class="material-symbols-outlined mr-2 text-sm">trending_up</span>Trending</h2>
+        <div class="flex flex-col gap-10 md:gap-12 flex-grow">
+          {% for post in trending_posts[:4] %}
+            {{ post_card(post, 'grayscale') }}
+          {% else %}
+          <p class="font-body-md text-sm text-on-surface-variant dark:text-neutral-400">No trending posts are available yet.</p>
+          {% endfor %}
+        </div>
+        <div class="mt-8 md:mt-12 border-t border-surface-container-high dark:border-neutral-800 pt-6 md:pt-8">
+          <a href="/posts" class="font-label-caps text-[10px] text-on-surface dark:text-white uppercase hover:text-secondary dark:hover:text-neutral-300 transition-colors inline-flex items-center tracking-widest">View All Posts<span class="material-symbols-outlined ml-2 text-sm">arrow_forward</span></a>
+        </div>
+      </section>
+
+      <section class="flex flex-col h-full">
+        <div class="mb-6 md:mb-8 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-on-surface-variant dark:text-neutral-400">auto_stories</span>
+          <h2 class="font-label-caps text-[10px] text-on-surface-variant dark:text-neutral-400 uppercase tracking-widest">Latest Posts</h2>
+        </div>
+        <div class="flex flex-col gap-10 md:gap-12 flex-grow">
+          {% for post in latest_posts %}
+            {% if not hero_post or post.id != hero_post.id %}
+              {{ post_card(post) }}
+            {% endif %}
+          {% else %}
+          <p class="font-body-md text-sm text-on-surface-variant dark:text-neutral-400">No latest posts are available yet.</p>
+          {% endfor %}
+        </div>
+        <div class="mt-8 md:mt-12 border-t border-surface-container-high dark:border-neutral-800 pt-6 md:pt-8">
+          <a href="/posts" class="font-label-caps text-[10px] text-on-surface dark:text-white uppercase hover:text-secondary dark:hover:text-neutral-300 transition-colors inline-flex items-center tracking-widest">View All Latest<span class="material-symbols-outlined ml-2 text-sm">arrow_forward</span></a>
+        </div>
+      </section>
+    </div>
+
+    <div class="border-t border-surface-container-high dark:border-neutral-800 pt-10 md:pt-16 mt-16 md:mt-24">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+        <div class="home-categories">
+          <div class="flex items-center justify-between gap-4 mb-6">
+            <h2 class="font-label-caps text-[10px] text-on-surface-variant dark:text-neutral-400 uppercase tracking-widest flex items-center"><span class="material-symbols-outlined mr-2 text-sm">folder_open</span>Categories</h2>
+            <a href="/categories" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface dark:text-white hover:text-secondary dark:hover:text-neutral-300 transition-colors">All Categories</a>
+          </div>
+          <div class="flex flex-col gap-4">
+            {% for category in selected_home_categories %}
+            <a href="/category/{{ category.slug }}" class="group flex items-center justify-between border-b border-surface-container-high dark:border-neutral-800 pb-3">
+              <span class="font-body-md text-base text-on-surface dark:text-neutral-200 group-hover:text-secondary dark:group-hover:text-neutral-400 transition-colors tracking-tight">{{ category.name }}</span>
+              <span class="material-symbols-outlined text-sm text-outline dark:text-neutral-600 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+            {% else %}
+            <p class="font-body-md text-sm text-on-surface-variant dark:text-neutral-400">No homepage categories are selected yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="home-tags">
+          <div class="flex items-center justify-between gap-4 mb-6">
+            <h2 class="font-label-caps text-[10px] text-on-surface-variant dark:text-neutral-400 uppercase tracking-widest flex items-center"><span class="material-symbols-outlined mr-2 text-sm">tag</span>Popular Tags</h2>
+            <a href="/tags" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface dark:text-white hover:text-secondary dark:hover:text-neutral-300 transition-colors">All Tags</a>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            {% for tag in selected_home_tags %}
+            <a href="/tag/{{ tag.slug }}" class="font-label-caps text-[10px] uppercase text-on-surface dark:text-neutral-200 border border-surface-container-high dark:border-neutral-800 px-4 py-2 rounded-full hover:bg-surface-container-high dark:hover:bg-neutral-800 transition-colors tracking-widest">#{{ tag.name }}</a>
+            {% else %}
+            <p class="font-body-md text-sm text-on-surface-variant dark:text-neutral-400">No homepage tags are selected yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-surface-container-lowest dark:bg-neutral-950 text-on-surface-variant dark:text-neutral-400 font-label-caps uppercase w-full border-t border-surface-container-high dark:border-neutral-800 transition-colors duration-300 mt-auto">
+    <div class="flex flex-col md:flex-row justify-between items-center py-16 px-6 md:px-12 max-w-[1200px] mx-auto space-y-8 md:space-y-0">
+      <span class="text-on-surface dark:text-neutral-300 tracking-widest text-[10px] text-center md:text-left">&copy; {{ site_name }}. All rights reserved.</span>
+      <nav class="flex flex-wrap justify-center gap-6">
+        <a class="text-[10px] tracking-widest hover:text-on-surface dark:hover:text-white transition-colors duration-300" href="/posts">All Posts</a>
+        <a class="text-[10px] tracking-widest hover:text-on-surface dark:hover:text-white transition-colors duration-300" href="/categories">Categories</a>
+        <a class="text-[10px] tracking-widest hover:text-on-surface dark:hover:text-white transition-colors duration-300" href="/tags">Tags</a>
+        <a class="text-[10px] tracking-widest hover:text-on-surface dark:hover:text-white transition-colors duration-300" href="/contact">Contact</a>
+        <a class="text-[10px] tracking-widest hover:text-on-surface dark:hover:text-white transition-colors duration-300" href="/privacy">Privacy</a>
+        <a class="text-[10px] tracking-widest hover:text-on-surface dark:hover:text-white transition-colors duration-300" href="/terms">Terms</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const html = document.documentElement;
+      const body = document.body;
+      const themeToggleBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const closeMenuBtn = document.getElementById('close-menu-btn');
+      const sidebar = document.getElementById('drawer');
+      const overlay = document.getElementById('mobile-overlay');
+      const searchBtn = document.getElementById('open-search-btn');
+      const closeSearchBtn = document.getElementById('close-search-btn');
+      const searchOverlay = document.getElementById('search-overlay');
+      const searchInput = document.getElementById('search-input');
+      const searchTags = document.getElementById('search-tags');
+      const searchForm = document.getElementById('search-form');
+      const categoriesBtn = document.getElementById('categories-btn');
+      const categoriesList = document.getElementById('categories-list');
+      const categoriesIcon = document.getElementById('categories-icon');
+      const tagsBtn = document.getElementById('tags-btn');
+      const tagsList = document.getElementById('tags-list');
+      const tagsIcon = document.getElementById('tags-icon');
+      let isMenuOpen = false;
+      let isSearchOpen = false;
+
+      function syncThemeIcon() {
+        themeIcon.textContent = html.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+      }
+
+      function lockBody() {
+        body.style.overflow = 'hidden';
+      }
+
+      function unlockBodyIfNeeded() {
+        if (!isMenuOpen && !isSearchOpen) body.style.overflow = '';
+      }
+
+      function toggleDisclosure(button, list, icon) {
+        const open = button.getAttribute('aria-expanded') !== 'true';
+        button.setAttribute('aria-expanded', String(open));
+        list.style.maxHeight = open ? `${list.scrollHeight}px` : '0px';
+        icon.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
+
+      function openMenu() {
+        isMenuOpen = true;
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        sidebar.setAttribute('aria-hidden', 'false');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.add('opacity-100', 'pointer-events-auto');
+        lockBody();
+      }
+
+      function closeMenu() {
+        isMenuOpen = false;
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        sidebar.setAttribute('aria-hidden', 'true');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        overlay.classList.remove('opacity-100', 'pointer-events-auto');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        unlockBodyIfNeeded();
+      }
+
+      function openSearch() {
+        isSearchOpen = true;
+        closeMenu();
+        searchOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        searchOverlay.classList.add('opacity-100', 'pointer-events-auto');
+        searchOverlay.setAttribute('aria-hidden', 'false');
+        searchBtn.setAttribute('aria-expanded', 'true');
+        lockBody();
+        setTimeout(() => {
+          searchInput.focus();
+          searchTags.classList.remove('opacity-0', 'translate-y-4');
+          searchTags.classList.add('opacity-100', 'translate-y-0');
+        }, 100);
+      }
+
+      function closeSearch() {
+        isSearchOpen = false;
+        searchOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+        searchOverlay.classList.add('opacity-0', 'pointer-events-none');
+        searchOverlay.setAttribute('aria-hidden', 'true');
+        searchBtn.setAttribute('aria-expanded', 'false');
+        searchTags.classList.remove('opacity-100', 'translate-y-0');
+        searchTags.classList.add('opacity-0', 'translate-y-4');
+        searchInput.value = '';
+        unlockBodyIfNeeded();
+      }
+
+      syncThemeIcon();
+      themeToggleBtn.addEventListener('click', () => {
+        const dark = !html.classList.contains('dark');
+        html.classList.toggle('dark', dark);
+        html.classList.toggle('light', !dark);
+        localStorage.setItem('homepage-theme', dark ? 'dark' : 'light');
+        syncThemeIcon();
+      });
+      categoriesBtn.addEventListener('click', () => toggleDisclosure(categoriesBtn, categoriesList, categoriesIcon));
+      tagsBtn.addEventListener('click', () => toggleDisclosure(tagsBtn, tagsList, tagsIcon));
+      menuBtn.addEventListener('click', openMenu);
+      closeMenuBtn.addEventListener('click', closeMenu);
+      overlay.addEventListener('click', closeMenu);
+      searchBtn.addEventListener('click', openSearch);
+      closeSearchBtn.addEventListener('click', closeSearch);
+      searchForm.addEventListener('submit', (event) => {
+        if (!searchInput.value.trim()) {
+          event.preventDefault();
+          searchInput.focus();
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        if (isSearchOpen) closeSearch();
+        if (isMenuOpen) closeMenu();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -19,6 +19,9 @@ from app.models.user import User
 from app.services.media_service import MediaUploadError, upload_featured_image
 from app.utils.slug import slugify
 
+SEED_MARKER = "Seed marker: managed demo content for blog seeding."
+POST_COUNT = 20
+
 
 @dataclass
 class DemoUploadFile:
@@ -46,13 +49,22 @@ def demo_png(width: int, height: int, start: tuple[int, int, int], end: tuple[in
 
 
 DEMO_CATEGORIES = [
-    ("Engineering", "Architecture notes, implementation details, and practical software decisions."),
-    ("Product", "Product thinking, launch notes, and user-centered tradeoffs."),
-    ("Design", "Interface polish, content structure, and visual systems."),
-    ("Operations", "Deployment, reliability, and maintenance lessons."),
+    ("Engineering", "Architecture notes, implementation details, and practical software decisions.", True, 1),
+    ("Product", "Product thinking, launch notes, and user-centered tradeoffs.", True, 2),
+    ("Design", "Interface polish, content structure, and visual systems.", True, 3),
+    ("Operations", "Deployment, reliability, and maintenance lessons.", False, 0),
 ]
 
-DEMO_TAGS = ["FastAPI", "UX", "Python", "Launch", "Testing", "Cloud", "Frontend", "Data"]
+DEMO_TAGS = [
+    ("FastAPI", True, 1),
+    ("UX", True, 2),
+    ("Python", True, 3),
+    ("Launch", True, 4),
+    ("Testing", True, 5),
+    ("Cloud", False, 0),
+    ("Frontend", True, 6),
+    ("Data", False, 0),
+]
 
 DEMO_POSTS = [
     ("Designing a Faster Editorial Workflow", "A practical look at reducing friction in a small publishing stack.", "Product", ["UX", "Launch"], 184),
@@ -70,6 +82,11 @@ DEMO_POSTS = [
     ("When to Refresh Data After a Write", "Refreshing ORM objects after counters change avoids stale UI details.", "Engineering", ["Python", "Testing"], 199),
     ("What Trending Lists Should Optimize For", "Popularity modules are most useful when they reveal genuine reader interest.", "Product", ["Data", "UX"], 467),
     ("A Calm Launch Checklist for Small Apps", "A compact checklist for routes, data, media, and browser verification.", "Operations", ["Launch", "Cloud"], 176),
+    ("Building a FastAPI Blog That Feels Fast", "Practical choices that make a server-rendered blog feel responsive.", "Engineering", ["FastAPI", "Python"], 338),
+    ("Search UX Patterns for Editorial Sites", "Small search decisions that make archives easier to explore.", "Design", ["UX", "Frontend"], 207),
+    ("Creating a Content Calendar That Ships", "A lightweight cadence for turning ideas into published articles.", "Product", ["Launch", "Data"], 165),
+    ("Using Categories Without Creating Clutter", "How broad categories keep navigation useful without overwhelming readers.", "Product", ["UX", "Data"], 143),
+    ("Polishing Empty States and Error Pages", "Clear fallback states make a content site feel maintained and trustworthy.", "Design", ["UX", "Frontend"], 254),
 ]
 
 PALETTE = [
@@ -91,7 +108,7 @@ async def upload_demo_images(count: int) -> list[str]:
     return urls
 
 
-def get_or_create_category(db, name: str, description: str) -> Category:
+def get_or_create_category(db, name: str, description: str, show_on_home: bool, home_order: int) -> Category:
     category = db.scalar(select(Category).where(Category.name == name))
     if category is None:
         category = Category(name=name, slug=slugify(name), description=description)
@@ -99,16 +116,50 @@ def get_or_create_category(db, name: str, description: str) -> Category:
         db.flush()
     elif not category.description:
         category.description = description
+    category.show_on_home = show_on_home
+    category.home_order = home_order
     return category
 
 
-def get_or_create_tag(db, name: str) -> Tag:
+def get_or_create_tag(db, name: str, show_on_home: bool, home_order: int) -> Tag:
     tag = db.scalar(select(Tag).where(Tag.name == name))
     if tag is None:
         tag = Tag(name=name, slug=slugify(name))
         db.add(tag)
         db.flush()
+    tag.show_on_home = show_on_home
+    tag.home_order = home_order
     return tag
+
+
+def desired_demo_slugs() -> set[str]:
+    return {slugify(title) for title, *_ in DEMO_POSTS[:POST_COUNT]}
+
+
+def is_demo_post(post: Post) -> bool:
+    slug = post.slug or ""
+    title = post.title or ""
+    content = post.content or ""
+    return (
+        slug in desired_demo_slugs()
+        or slug.startswith(("demo-", "test-", "seed-", "testing-fastapi-blog-", "archive-post-", "imageless-top-", "count-imageless-", "count-visible-", "image-backed-top-", "image-backed-low-", "low-views-", "high-views-", "with-image-", "edit-existing-image-", "edit-missing-image-", "no-image-"))
+        or title.startswith(("Demo ", "Test "))
+        or SEED_MARKER in content
+    )
+
+
+def cleanup_extra_demo_posts(db, keep_slugs: set[str]) -> tuple[int, int, int]:
+    demo_posts = [post for post in db.scalars(select(Post).order_by(Post.published_at.desc().nullslast(), Post.created_at.desc())).all() if is_demo_post(post)]
+    before = len(demo_posts)
+    deleted = 0
+    for post in demo_posts:
+        if post.slug not in keep_slugs:
+            db.delete(post)
+            deleted += 1
+    db.commit()
+    remaining = before - deleted
+    print(f"demo cleanup: existed before cleanup={before}, deleted={deleted}, remaining={remaining}")
+    return before, deleted, remaining
 
 
 def seed_posts(image_urls: list[str]) -> tuple[int, int, int]:
@@ -116,18 +167,20 @@ def seed_posts(image_urls: list[str]) -> tuple[int, int, int]:
     db = SessionLocal()
     try:
         author = db.scalar(select(User).order_by(User.id))
-        categories = {name: get_or_create_category(db, name, description) for name, description in DEMO_CATEGORIES}
-        tags = {name: get_or_create_tag(db, name) for name in DEMO_TAGS}
+        categories = {name: get_or_create_category(db, name, description, show_on_home, home_order) for name, description, show_on_home, home_order in DEMO_CATEGORIES}
+        tags = {name: get_or_create_tag(db, name, show_on_home, home_order) for name, show_on_home, home_order in DEMO_TAGS}
         now = datetime.now(timezone.utc)
         created = 0
         updated = 0
-        for index, (title, summary, category_name, tag_names, views_count) in enumerate(DEMO_POSTS):
+        keep_slugs = desired_demo_slugs()
+        for index, (title, summary, category_name, tag_names, views_count) in enumerate(DEMO_POSTS[:POST_COUNT]):
             slug = slugify(title)
             post = db.scalar(select(Post).where(Post.slug == slug))
             content = (
                 f"{summary}\n\n"
                 "This demo article is seeded to exercise public browsing, taxonomy pages, search, related posts, image rendering, and view-count sorting.\n\n"
-                "It uses the same Post, Category, Tag, and media upload flow as regular admin-created content."
+                "It uses the same Post, Category, Tag, and media upload flow as regular admin-created content.\n\n"
+                f"{SEED_MARKER}"
             )
             if post is None:
                 post = Post(title=title, slug=slug, content=content, author_id=author.id if author else None)
@@ -145,6 +198,7 @@ def seed_posts(image_urls: list[str]) -> tuple[int, int, int]:
             post.views_count = views_count
             post.published_at = now - timedelta(days=index)
         db.commit()
+        cleanup_extra_demo_posts(db, keep_slugs)
         return len(categories), len(tags), created + updated
     finally:
         db.close()
@@ -152,7 +206,7 @@ def seed_posts(image_urls: list[str]) -> tuple[int, int, int]:
 
 async def main() -> None:
     parser = argparse.ArgumentParser(description="Seed demo blog posts with images uploaded through the configured media API.")
-    parser.add_argument("--posts", type=int, default=len(DEMO_POSTS), choices=[len(DEMO_POSTS)], help="Number of demo posts to seed.")
+    parser.add_argument("--posts", type=int, default=POST_COUNT, choices=[POST_COUNT], help="Number of demo posts to seed.")
     args = parser.parse_args()
     try:
         image_urls = await upload_demo_images(args.posts)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import create_templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -9,10 +9,11 @@ from app.models.page import Page
 from app.models.tag import Tag
 from app.services import category_service, post_service, tag_service
 from app.services.setting_service import get_settings_map
+from app.utils.formatting import format_count, format_views
 from app.utils.pagination import Pagination
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = create_templates()
 
 
 def public_context(db: Session) -> dict:
@@ -22,9 +23,13 @@ def public_context(db: Session) -> dict:
         "tags": db.scalars(select(Tag).order_by(Tag.name)).all(),
         "menu_categories": category_service.menu_categories(db),
         "menu_tags": tag_service.menu_tags(db),
+        "home_categories": category_service.home_categories(db),
+        "home_tags": tag_service.home_tags(db),
         "trending_posts": post_service.trending_posts(db),
         "estimate_read_time": post_service.estimate_read_time,
         "published_time_label": post_service.published_time_label,
+        "format_count": format_count,
+        "format_views": format_views,
     }
 
 
@@ -37,9 +42,11 @@ def home(request: Request, db: Session = Depends(get_db)):
             "request": request,
             "latest_posts": post_service.latest_posts(db, 8, featured.id if featured else None),
             "featured_post": featured,
+            "home_categories": category_service.home_categories(db),
+            "home_tags": tag_service.home_tags(db),
         }
     )
-    return templates.TemplateResponse("index.html", context)
+    return templates.TemplateResponse("home.html", context)
 
 
 @router.get("/posts")
@@ -106,7 +113,7 @@ def render_static_page(slug: str, request: Request, db: Session):
     page = db.scalar(select(Page).where(Page.slug == slug, Page.status == "published"))
     context = public_context(db)
     context.update({"request": request, "page": page, "title": page.title if page else slug.title(), "content": page.content if page else "This page is being prepared."})
-    return templates.TemplateResponse(f"{slug}.html", context)
+    return templates.TemplateResponse("page_standalone.html", context)
 
 
 @router.get("/about")

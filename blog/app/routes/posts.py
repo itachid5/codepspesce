@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import create_templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -12,9 +12,12 @@ from app.routes.deps import require_admin
 from app.services.media_service import MediaUploadError, upload_featured_image
 from app.services.post_service import create_or_update_post
 from app.services.setting_service import get_settings_map
+from app.utils.formatting import format_count, format_views
 
 router = APIRouter(prefix="/admin/posts")
-templates = Jinja2Templates(directory="app/templates")
+templates = create_templates()
+
+FEATURED_IMAGE_REQUIRED_MESSAGE = "Featured image is required. Please upload an image before saving the post."
 
 
 def form_data(db: Session) -> dict:
@@ -29,7 +32,7 @@ def form_data(db: Session) -> dict:
 def posts_list(request: Request, db: Session = Depends(get_db)):
     admin = require_admin(request, db)
     posts = db.scalars(select(Post).options(selectinload(Post.category), selectinload(Post.tags)).order_by(Post.created_at.desc())).all()
-    return templates.TemplateResponse("admin/posts_list.html", {"request": request, "admin": admin, "posts": posts, "settings": get_settings_map(db)})
+    return templates.TemplateResponse("admin/posts_list.html", {"request": request, "admin": admin, "posts": posts, "settings": get_settings_map(db), "format_count": format_count, "format_views": format_views})
 
 
 @router.get("/create")
@@ -57,6 +60,10 @@ async def create_post(
     admin = require_admin(request, db)
     try:
         image_url = await upload_featured_image(featured_image)
+        if not image_url.strip():
+            context = {"request": request, "admin": admin, "post": None, "error": FEATURED_IMAGE_REQUIRED_MESSAGE}
+            context.update(form_data(db))
+            return templates.TemplateResponse("admin/post_create.html", context, status_code=400)
         create_or_update_post(db, title=title, slug=slug, summary=summary, content=content, status=status, is_featured=is_featured, category_id=category_id, tag_ids=tag_ids, author_id=admin.id, featured_image_url=image_url)
     except MediaUploadError as exc:
         context = {"request": request, "admin": admin, "post": None, "error": str(exc)}
@@ -97,6 +104,10 @@ async def update_post(
         return RedirectResponse("/admin/posts", status_code=303)
     try:
         image_url = await upload_featured_image(featured_image)
+        if not (image_url or post.featured_image_url or "").strip():
+            context = {"request": request, "admin": admin, "post": post, "error": FEATURED_IMAGE_REQUIRED_MESSAGE}
+            context.update(form_data(db))
+            return templates.TemplateResponse("admin/post_edit.html", context, status_code=400)
         create_or_update_post(db, title=title, slug=slug, summary=summary, content=content, status=status, is_featured=is_featured, category_id=category_id, tag_ids=tag_ids, author_id=admin.id, featured_image_url=image_url, post=post)
     except MediaUploadError as exc:
         context = {"request": request, "admin": admin, "post": post, "error": str(exc)}
