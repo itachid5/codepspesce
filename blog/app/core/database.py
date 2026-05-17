@@ -28,14 +28,16 @@ def init_db() -> None:
     import app.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
-    ensure_menu_columns()
+    ensure_taxonomy_columns()
 
 
-def ensure_menu_columns() -> None:
+def ensure_taxonomy_columns() -> None:
     inspector = inspect(engine)
     expected = {
         "show_in_menu": "BOOLEAN NOT NULL DEFAULT FALSE",
         "menu_order": "INTEGER NOT NULL DEFAULT 0",
+        "show_on_home": "BOOLEAN NOT NULL DEFAULT FALSE",
+        "home_order": "INTEGER NOT NULL DEFAULT 0",
     }
     with engine.begin() as connection:
         for table_name in ("categories", "tags"):

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import create_templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,7 +11,7 @@ from app.services.page_service import unique_page_slug
 from app.services.setting_service import get_settings_map
 
 router = APIRouter(prefix="/admin/pages")
-templates = Jinja2Templates(directory="app/templates")
+templates = create_templates()
 
 
 @router.get("")

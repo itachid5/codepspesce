@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import create_templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import get_settings
@@ -9,7 +9,7 @@ from app.core.database import init_db, seed_default_data
 from app.routes import admin, auth, categories, pages, posts, public, settings as settings_routes, tags
 
 settings = get_settings()
-templates = Jinja2Templates(directory="app/templates")
+templates = create_templates()
 
 
 def create_app() -> FastAPI:

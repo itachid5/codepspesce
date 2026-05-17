@@ -13,5 +13,7 @@ class Category(Base):
     description: Mapped[str] = mapped_column(Text, default="", nullable=False)
     show_in_menu: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     menu_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    show_on_home: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    home_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     posts = relationship("Post", back_populates="category")

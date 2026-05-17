@@ -6,13 +6,23 @@ from app.models.post import Post
 from app.utils.slug import slugify
 
 
-def create_category(db: Session, name: str, description: str = "", show_in_menu: bool = False, menu_order: int = 0) -> Category:
+def create_category(
+    db: Session,
+    name: str,
+    description: str = "",
+    show_in_menu: bool = False,
+    menu_order: int = 0,
+    show_on_home: bool = False,
+    home_order: int = 0,
+) -> Category:
     category = Category(
         name=name.strip(),
         slug=unique_category_slug(db, name),
         description=description.strip(),
         show_in_menu=show_in_menu,
         menu_order=menu_order,
+        show_on_home=show_on_home,
+        home_order=home_order,
     )
     db.add(category)
     db.commit()
@@ -20,7 +30,16 @@ def create_category(db: Session, name: str, description: str = "", show_in_menu:
     return category
 
 
-def update_category(db: Session, category: Category, name: str, description: str = "", show_in_menu: bool = False, menu_order: int = 0) -> Category:
+def update_category(
+    db: Session,
+    category: Category,
+    name: str,
+    description: str = "",
+    show_in_menu: bool = False,
+    menu_order: int = 0,
+    show_on_home: bool = False,
+    home_order: int = 0,
+) -> Category:
     clean_name = name.strip()
     if clean_name and clean_name != category.name:
         category.name = clean_name
@@ -28,6 +47,8 @@ def update_category(db: Session, category: Category, name: str, description: str
     category.description = description.strip()
     category.show_in_menu = show_in_menu
     category.menu_order = menu_order
+    category.show_on_home = show_on_home
+    category.home_order = home_order
     db.commit()
     db.refresh(category)
     return category
@@ -35,6 +56,10 @@ def update_category(db: Session, category: Category, name: str, description: str
 
 def menu_categories(db: Session) -> list[Category]:
     return db.scalars(select(Category).where(Category.show_in_menu.is_(True)).order_by(Category.menu_order, Category.name)).all()
+
+
+def home_categories(db: Session) -> list[Category]:
+    return db.scalars(select(Category).where(Category.show_on_home.is_(True)).order_by(Category.home_order, Category.name)).all()
 
 
 def categories_with_published_counts(db: Session) -> list[tuple[Category, int]]:

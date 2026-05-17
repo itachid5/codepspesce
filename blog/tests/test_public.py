@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from app.core.database import SessionLocal
 from app.models.post import Post
-from app.services.post_service import estimate_read_time
+from app.services.post_service import estimate_read_time, published_posts_count, trending_posts
 
 
 def create_taxonomy(admin_client, category_name, tag_name):
@@ -38,6 +38,7 @@ def create_post(admin_client, *, title, slug, category_id, tag_id, summary="A se
             "category_id": category_id,
             "tag_ids": tag_id,
         },
+        files={"featured_image": (f"{slug}.png", b"fake image", "image/png")},
         follow_redirects=False,
     )
     assert response.status_code == 303
@@ -95,7 +96,7 @@ def test_create_taxonomy_post_search_and_detail(admin_client):
     detail = admin_client.get(f"/post/testing-fastapi-blog-{suffix}")
     assert detail.status_code == 200
     assert post_title in detail.text
-    assert "views" in detail.text
+    assert "1 view" in detail.text
     assert "2 min read" in detail.text
 
     category = admin_client.get(f"/category/python-{suffix}")
@@ -113,6 +114,80 @@ def test_create_taxonomy_post_search_and_detail(admin_client):
     assert tag_name in tags.text
     assert "1 post" in categories.text
     assert "1 post" in tags.text
+
+
+def test_homepage_uses_selected_taxonomy(admin_client):
+    suffix = uuid4().hex[:8]
+    first_category = f"Home Alpha {suffix}"
+    second_category = f"Home Beta {suffix}"
+    hidden_category = f"Home Hidden {suffix}"
+    first_tag = f"Home Tag Alpha {suffix}"
+    second_tag = f"Home Tag Beta {suffix}"
+    hidden_tag = f"Home Tag Hidden {suffix}"
+
+    admin_client.post("/admin/categories", data={"name": first_category, "description": "First home category", "show_on_home": "true", "home_order": "2"}, follow_redirects=False)
+    admin_client.post("/admin/categories", data={"name": second_category, "description": "Second home category", "show_on_home": "true", "home_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/categories", data={"name": hidden_category, "description": "Not selected"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": first_tag, "show_on_home": "true", "home_order": "2"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": second_tag, "show_on_home": "true", "home_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": hidden_tag}, follow_redirects=False)
+
+    home = admin_client.get("/")
+    assert home.status_code == 200
+    soup = BeautifulSoup(home.text, "html.parser")
+    categories_section = soup.select_one(".home-categories")
+    tags_section = soup.select_one(".home-tags")
+    assert categories_section is not None
+    assert tags_section is not None
+    assert categories_section.select_one('a[href="/categories"]') is not None
+    assert tags_section.select_one('a[href="/tags"]') is not None
+
+    category_text = categories_section.get_text(" ")
+    tag_text = tags_section.get_text(" ")
+    assert first_category in category_text
+    assert second_category in category_text
+    assert hidden_category not in category_text
+    assert first_tag in tag_text
+    assert second_tag in tag_text
+    assert hidden_tag not in tag_text
+    assert category_text.index(second_category) < category_text.index(first_category)
+    assert tag_text.index(second_tag) < tag_text.index(first_tag)
+
+    categories = admin_client.get("/categories")
+    tags = admin_client.get("/tags")
+    assert first_category in categories.text
+    assert second_category in categories.text
+    assert hidden_category in categories.text
+    assert first_tag in tags.text
+    assert second_tag in tags.text
+    assert hidden_tag in tags.text
+
+
+def test_homepage_taxonomy_is_separate_from_drawer_menu(admin_client):
+    suffix = uuid4().hex[:8]
+    home_only_category = f"Home Only Category {suffix}"
+    menu_only_category = f"Menu Only Category {suffix}"
+    home_only_tag = f"Home Only Tag {suffix}"
+    menu_only_tag = f"Menu Only Tag {suffix}"
+
+    admin_client.post("/admin/categories", data={"name": home_only_category, "description": "Home", "show_on_home": "true", "home_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/categories", data={"name": menu_only_category, "description": "Menu", "show_in_menu": "true", "menu_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": home_only_tag, "show_on_home": "true", "home_order": "1"}, follow_redirects=False)
+    admin_client.post("/admin/tags", data={"name": menu_only_tag, "show_in_menu": "true", "menu_order": "1"}, follow_redirects=False)
+
+    soup = BeautifulSoup(admin_client.get("/").text, "html.parser")
+    drawer_text = soup.select_one("#drawer").get_text(" ")
+    home_category_text = soup.select_one(".home-categories").get_text(" ")
+    home_tag_text = soup.select_one(".home-tags").get_text(" ")
+
+    assert home_only_category in home_category_text
+    assert menu_only_category not in home_category_text
+    assert home_only_tag in home_tag_text
+    assert menu_only_tag not in home_tag_text
+    assert menu_only_category in drawer_text
+    assert menu_only_tag in drawer_text
+    assert home_only_category not in drawer_text
+    assert home_only_tag not in drawer_text
 
 
 def test_drawer_uses_selected_menu_taxonomy(admin_client):
@@ -146,6 +221,78 @@ def test_drawer_uses_selected_menu_taxonomy(admin_client):
     assert hidden_tag in tags.text
 
 
+def test_public_pages_exclude_published_posts_without_featured_images(admin_client):
+    suffix = uuid4().hex[:8]
+    category_id, tag_id = create_taxonomy(admin_client, f"Image Filter {suffix}", f"Visible Tag {suffix}")
+    top_slug = f"image-backed-top-{suffix}"
+    low_slug = f"image-backed-low-{suffix}"
+    imageless_slug = f"imageless-top-{suffix}"
+    top_title = f"Image Backed Top {suffix}"
+    low_title = f"Image Backed Low {suffix}"
+    imageless_title = f"Imageless Top {suffix}"
+
+    create_post(admin_client, title=top_title, slug=top_slug, category_id=category_id, tag_id=tag_id, summary=f"Visible top summary {suffix}")
+    create_post(admin_client, title=low_title, slug=low_slug, category_id=category_id, tag_id=tag_id, summary=f"Visible low summary {suffix}")
+    create_post(admin_client, title=imageless_title, slug=imageless_slug, category_id=category_id, tag_id=tag_id, summary=f"Hidden imageless summary {suffix}")
+    top_image = f"https://cdn.example.test/{top_slug}.png"
+    low_image = f"https://cdn.example.test/{low_slug}.png"
+    set_post_metadata(top_slug, featured_image_url=top_image, views_count=2_100_000_001)
+    set_post_metadata(low_slug, featured_image_url=low_image, views_count=2_100_000_000)
+    set_post_metadata(imageless_slug, featured_image_url="", views_count=2_100_000_002)
+
+    for path in ["/", "/posts", f"/category/image-filter-{suffix}", f"/tag/visible-tag-{suffix}", f"/search?q={suffix}"]:
+        response = admin_client.get(path)
+        assert response.status_code == 200
+        assert imageless_title not in response.text
+        assert top_title in response.text
+        assert top_image in response.text
+
+    detail = admin_client.get(f"/post/{top_slug}")
+    assert detail.status_code == 200
+    assert imageless_title not in detail.text
+    assert low_title in detail.text
+    assert low_image in detail.text
+
+    hidden_detail = admin_client.get(f"/post/{imageless_slug}")
+    assert hidden_detail.status_code == 404
+
+    db = SessionLocal()
+    try:
+        matching_titles = [post.title for post in trending_posts(db, limit=1000) if suffix in post.title]
+    finally:
+        db.close()
+    assert imageless_title not in matching_titles
+    assert matching_titles.index(top_title) < matching_titles.index(low_title)
+
+
+def test_published_posts_count_excludes_imageless_posts(admin_client):
+    suffix = uuid4().hex[:8]
+    category_id, tag_id = create_taxonomy(admin_client, f"Count Category {suffix}", f"Count Tag {suffix}")
+    db = SessionLocal()
+    try:
+        count_before = published_posts_count(db)
+    finally:
+        db.close()
+
+    slug = f"count-visible-{suffix}"
+    create_post(admin_client, title=f"Count Visible {suffix}", slug=slug, category_id=category_id, tag_id=tag_id)
+
+    db = SessionLocal()
+    try:
+        imageless = Post(title=f"Count Imageless {suffix}", slug=f"count-imageless-{suffix}", summary="Hidden.", content="Hidden content.", status="published", featured_image_url="")
+        db.add(imageless)
+        db.commit()
+    finally:
+        db.close()
+
+    db = SessionLocal()
+    try:
+        count_after = published_posts_count(db)
+    finally:
+        db.close()
+    assert count_after == count_before + 1
+
+
 def test_view_counts_featured_images_and_trending(admin_client):
     suffix = uuid4().hex[:8]
     category_id, tag_id = create_taxonomy(admin_client, f"Views {suffix}", f"Images {suffix}")
@@ -161,19 +308,23 @@ def test_view_counts_featured_images_and_trending(admin_client):
     detail = admin_client.get(f"/post/{high_slug}")
     assert detail.status_code == 200
     assert high_image in detail.text
-    assert "2000000000 views" in detail.text
+    assert "2b views" in detail.text
+    assert "2000000000 views" not in detail.text
 
     for path in ["/", "/posts", f"/category/views-{suffix}", f"/tag/images-{suffix}", f"/search?q={suffix}"]:
         response = admin_client.get(path)
         assert response.status_code == 200
         assert high_image in response.text
-        assert "2000000000 views" in response.text
+        assert "2b views" in response.text
+        assert "2000000000 views" not in response.text
 
-    home_soup = BeautifulSoup(admin_client.get("/").text, "html.parser")
-    trending = [item.get_text(" ") for item in home_soup.select(".trend")]
-    assert trending
-    high_index = next(index for index, text in enumerate(trending) if f"High Views {suffix}" in text)
-    low_index = next(index for index, text in enumerate(trending) if f"Low Views {suffix}" in text)
+    db = SessionLocal()
+    try:
+        trending_titles = [post.title for post in trending_posts(db, limit=1000) if suffix in post.title]
+    finally:
+        db.close()
+    high_index = next(index for index, title in enumerate(trending_titles) if f"High Views {suffix}" in title)
+    low_index = next(index for index, title in enumerate(trending_titles) if f"Low Views {suffix}" in title)
     assert high_index < low_index
 
 

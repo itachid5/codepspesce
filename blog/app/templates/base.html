@@ -11,7 +11,7 @@
       document.documentElement.dataset.theme = savedTheme || (prefersDark ? 'dark' : 'light');
     })();
   </script>
-  <link rel="stylesheet" href="/static/css/style.css?v=menu-dark-footer">
+  <link rel="stylesheet" href="/static/css/style.css?v=search-overlay">
 </head>
 <body>
   {% set current_path = request.url.path if request is defined else '' %}
@@ -87,6 +87,35 @@
       <button class="menu-link drawer-theme-toggle" type="button" data-theme-toggle>{{ icon('moon') }}<span class="theme-toggle-label">Dark Mode</span></button>
     </nav>
   </aside>
+  {% set overlay_home_tags = home_tags | default([]) %}
+  {% set overlay_home_categories = home_categories | default([]) %}
+  {% set overlay_use_home = (overlay_home_tags | length) + (overlay_home_categories | length) > 0 %}
+  {% set overlay_tags = overlay_home_tags if overlay_use_home else (menu_tags | default([])) %}
+  {% set overlay_categories = overlay_home_categories if overlay_use_home else (menu_categories | default([])) %}
+  <section class="search-overlay" data-search-overlay aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="search-overlay-title">
+    <button class="search-overlay-backdrop" type="button" aria-label="Close search" data-close-search></button>
+    <div class="search-overlay-shell">
+      <div class="search-overlay-topbar">
+        <p class="search-overlay-kicker">Instant discovery</p>
+        <button class="search-overlay-close icon-button" type="button" aria-label="Close search" data-close-search>{{ icon('close') }}</button>
+      </div>
+      <div class="search-overlay-content">
+        <h2 id="search-overlay-title">Search Blog</h2>
+        <form class="search-overlay-form" action="/search" data-search-overlay-form>
+          <label class="sr-only" for="global-search-input">Search query</label>
+          <input id="global-search-input" class="search-overlay-input" name="q" type="search" placeholder="Type to search..." autocomplete="off" data-search-overlay-input>
+          <button class="search-overlay-submit" type="submit">Search {{ icon('arrow') }}</button>
+        </form>
+        <div class="search-overlay-topics" aria-label="Popular Topics">
+          <p>Popular Topics</p>
+          <div class="search-topic-grid">
+            {% for topic_tag in overlay_tags[:4] %}<a class="search-topic-pill tag-pill" href="/tag/{{ topic_tag.slug }}">#{{ topic_tag.name }}</a>{% endfor %}
+            {% for topic_category in overlay_categories[:4] %}<a class="search-topic-pill" href="/category/{{ topic_category.slug }}">{{ topic_category.name }}</a>{% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <main id="top">
     {% if not_found is defined %}<section class="page-card"><h1>Page not found</h1><p>The page you requested could not be found.</p></section>{% else %}{% block content %}{% endblock %}{% endif %}
   </main>
@@ -107,6 +136,6 @@
     </div>
     <div class="footer-bottom"><span>&copy; {{ settings.get('site_name', 'Blog Website') }}</span><span>Built for clear, fast reading.</span></div>
   </footer>
-  <script src="/static/js/main.js?v=menu-dark-footer"></script>
+  <script src="/static/js/main.js?v=search-overlay"></script>
 </body>
 </html>

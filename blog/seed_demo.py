@@ -19,7 +19,8 @@ from app.models.user import User
 from app.utils.slug import slugify
 
 IMAGE_DIR = Path("tmp/demo_images")
-POST_COUNT = 15
+POST_COUNT = 20
+SEED_MARKER = "Seed marker: managed demo content for blog seeding."
 IMAGE_WIDTH = 1200
 IMAGE_HEIGHT = 800
 UPLOAD_URL = "https://bot-api-j75j.onrender.com/api/cloudinary/upload"
@@ -34,18 +35,18 @@ class SeedStats:
 
 
 DEMO_CATEGORIES = [
-    ("Development", "development", "Practical engineering tutorials and platform notes."),
-    ("Design", "design", "Interface design, content strategy, and user experience ideas."),
-    ("Operations", "operations", "Deployment, monitoring, automation, and reliability guides."),
+    ("Development", "development", "Practical engineering tutorials and platform notes.", True, 1),
+    ("Design", "design", "Interface design, content strategy, and user experience ideas.", True, 2),
+    ("Operations", "operations", "Deployment, monitoring, automation, and reliability guides.", False, 0),
 ]
 
 DEMO_TAGS = [
-    ("FastAPI", "fastapi"),
-    ("Python", "python"),
-    ("Cloud", "cloud"),
-    ("Frontend", "frontend"),
-    ("Testing", "testing"),
-    ("Automation", "automation"),
+    ("FastAPI", "fastapi", True, 1),
+    ("Python", "python", True, 2),
+    ("Cloud", "cloud", False, 0),
+    ("Frontend", "frontend", True, 3),
+    ("Testing", "testing", True, 4),
+    ("Automation", "automation", False, 0),
 ]
 
 DEMO_POSTS = [
@@ -64,26 +65,36 @@ DEMO_POSTS = [
     "Making Featured Posts Stand Out",
     "Search UX Patterns for Editorial Sites",
     "Keeping a Blog Maintainable Over Time",
+    "Planning a Lightweight Content Taxonomy",
+    "Making Image Uploads Observable",
+    "Responsive Cards That Carry Their Weight",
+    "What Trending Lists Should Optimize For",
+    "A Calm Launch Checklist for Small Apps",
 ]
 
 
-def ensure_category(db: Session, name: str, slug: str, description: str) -> Category:
+def ensure_category(db: Session, name: str, slug: str, description: str, show_on_home: bool, home_order: int) -> Category:
     category = db.scalar(select(Category).where(Category.slug == slug))
     if category is None:
         category = Category(name=name, slug=slug, description=description)
         db.add(category)
-        db.commit()
-        db.refresh(category)
+    category.description = description
+    category.show_on_home = show_on_home
+    category.home_order = home_order
+    db.commit()
+    db.refresh(category)
     return category
 
 
-def ensure_tag(db: Session, name: str, slug: str) -> Tag:
+def ensure_tag(db: Session, name: str, slug: str, show_on_home: bool, home_order: int) -> Tag:
     tag = db.scalar(select(Tag).where(Tag.slug == slug))
     if tag is None:
         tag = Tag(name=name, slug=slug)
         db.add(tag)
-        db.commit()
-        db.refresh(tag)
+    tag.show_on_home = show_on_home
+    tag.home_order = home_order
+    db.commit()
+    db.refresh(tag)
     return tag
 
 
@@ -94,6 +105,7 @@ def demo_content(title: str, index: int) -> str:
             "A strong blog experience starts with useful content, clear navigation, and visual hierarchy that helps readers decide what to open next.",
             f"This demo article number {index} includes realistic paragraph length so list pages, search results, category pages, tag pages, related posts, and the detail page all have meaningful content to render.",
             "Use the admin panel to replace this seeded copy with real posts when production content is ready.",
+            SEED_MARKER,
         ]
     )
 
@@ -198,13 +210,43 @@ def prepare_uploaded_image(index: int, stats: SeedStats) -> str:
     return upload_image(image_path, index, stats)
 
 
+def desired_demo_slugs() -> set[str]:
+    return {slugify(title) for title in DEMO_POSTS[:POST_COUNT]}
+
+
+def is_demo_post(post: Post) -> bool:
+    slug = post.slug or ""
+    title = post.title or ""
+    content = post.content or ""
+    return (
+        slug in desired_demo_slugs()
+        or slug.startswith(("demo-", "test-", "seed-", "testing-fastapi-blog-", "archive-post-", "imageless-top-", "count-imageless-", "count-visible-", "image-backed-top-", "image-backed-low-", "low-views-", "high-views-", "with-image-", "edit-existing-image-", "edit-missing-image-", "no-image-"))
+        or title.startswith(("Demo ", "Test "))
+        or SEED_MARKER in content
+    )
+
+
+def cleanup_extra_demo_posts(db: Session, keep_slugs: set[str]) -> tuple[int, int, int]:
+    demo_posts = [post for post in db.scalars(select(Post).order_by(Post.published_at.desc().nullslast(), Post.created_at.desc())).all() if is_demo_post(post)]
+    before = len(demo_posts)
+    deleted = 0
+    for post in demo_posts:
+        if post.slug not in keep_slugs:
+            db.delete(post)
+            deleted += 1
+    db.commit()
+    remaining = before - deleted
+    print(f"demo cleanup: existed before cleanup={before}, deleted={deleted}, remaining={remaining}")
+    return before, deleted, remaining
+
+
 def upsert_demo_posts(db: Session, image_urls: list[str]) -> None:
     admin = db.scalar(select(User).order_by(User.id))
     categories = [ensure_category(db, *item) for item in DEMO_CATEGORIES]
     tags = [ensure_tag(db, *item) for item in DEMO_TAGS]
     now = datetime.now(timezone.utc)
 
-    for index, title in enumerate(DEMO_POSTS, start=1):
+    for index, title in enumerate(DEMO_POSTS[:POST_COUNT], start=1):
         slug = slugify(title)
         post = db.scalar(select(Post).where(Post.slug == slug))
         if post is None:
@@ -223,7 +265,7 @@ def upsert_demo_posts(db: Session, image_urls: list[str]) -> None:
 
 
 def ensure_all_published_posts_have_unique_cloudinary_images(db: Session, start_index: int, stats: SeedStats) -> None:
-    posts = db.scalars(select(Post).where(Post.status == "published").order_by(Post.id)).all()
+    posts = db.scalars(select(Post).where(Post.status == "published", Post.slug.in_(desired_demo_slugs())).order_by(Post.id)).all()
     seen_urls: set[str] = set()
     image_index = start_index
     for post in posts:
@@ -239,7 +281,7 @@ def ensure_all_published_posts_have_unique_cloudinary_images(db: Session, start_
 
 
 def validate_published_posts(db: Session, stats: SeedStats) -> None:
-    posts = db.scalars(select(Post).where(Post.status == "published").order_by(Post.id)).all()
+    posts = db.scalars(select(Post).where(Post.status == "published", Post.slug.in_(desired_demo_slugs())).order_by(Post.id)).all()
     empty = [post.slug for post in posts if not (post.featured_image_url or "").strip()]
     non_cloudinary = [post.slug for post in posts if "cloudinary" not in (post.featured_image_url or "").lower()]
     urls = [post.featured_image_url for post in posts]
@@ -253,8 +295,8 @@ def validate_published_posts(db: Session, stats: SeedStats) -> None:
         raise RuntimeError(f"duplicate featured_image_url values found: {duplicates}")
 
     stats.posts_with_featured_images = len(posts)
-    print(f"validated published posts with featured images: {len(posts)}")
-    print("validated image URLs are unique and Cloudinary-hosted")
+    print(f"validated seeded published posts with featured images: {len(posts)}")
+    print("validated seeded image URLs are unique and Cloudinary-hosted")
 
 
 def main() -> None:
@@ -265,7 +307,9 @@ def main() -> None:
 
     db = SessionLocal()
     try:
+        keep_slugs = desired_demo_slugs()
         upsert_demo_posts(db, image_urls)
+        cleanup_extra_demo_posts(db, keep_slugs)
         ensure_all_published_posts_have_unique_cloudinary_images(db, POST_COUNT, stats)
         validate_published_posts(db, stats)
     finally:

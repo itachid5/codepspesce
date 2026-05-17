@@ -24,6 +24,16 @@ def prepare_database():
     seed_default_data()
 
 
+@pytest.fixture(autouse=True)
+def mock_featured_image_upload(monkeypatch):
+    async def upload(file):
+        if file is None or not getattr(file, "filename", ""):
+            return ""
+        return f"https://cdn.example.test/{file.filename}"
+
+    monkeypatch.setattr("app.routes.posts.upload_featured_image", upload)
+
+
 @pytest.fixture
 def client():
     return TestClient(app)

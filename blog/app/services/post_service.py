@@ -49,10 +49,14 @@ def published_time_label(published_at: datetime | None, now: datetime | None = N
     return published.strftime("%b %d, %Y")
 
 
+def has_featured_image_filter():
+    return func.trim(Post.featured_image_url) != ""
+
+
 def published_posts_query():
     return (
         select(Post)
-        .where(Post.status == "published")
+        .where(Post.status == "published", has_featured_image_filter())
         .options(selectinload(Post.category), selectinload(Post.tags), selectinload(Post.author))
     )
 
@@ -73,7 +77,7 @@ def featured_post(db: Session) -> Post | None:
 
 
 def published_posts_count(db: Session) -> int:
-    return db.scalar(select(func.count(Post.id)).where(Post.status == "published")) or 0
+    return db.scalar(select(func.count(Post.id)).where(Post.status == "published", has_featured_image_filter())) or 0
 
 
 def paginated_posts(db: Session, offset: int, limit: int) -> list[Post]:

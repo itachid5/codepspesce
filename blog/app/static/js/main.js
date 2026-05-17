@@ -1,10 +1,11 @@
 const drawer = document.querySelector('#drawer');
 const drawerOverlay = document.querySelector('.drawer-overlay');
-const headerSearch = document.querySelector('.header-search');
-const headerSearchInput = document.querySelector('.header-search input');
+const searchOverlay = document.querySelector('[data-search-overlay]');
+const searchOverlayInput = document.querySelector('[data-search-overlay-input]');
 const menuButtons = document.querySelectorAll('[data-open-menu]');
 const searchButtons = document.querySelectorAll('[data-open-search]');
 const themeButtons = document.querySelectorAll('[data-theme-toggle]');
+const searchForms = document.querySelectorAll('[data-search-overlay-form]');
 
 const setDrawerOpen = (open) => {
   drawer?.classList.toggle('open', open);
@@ -12,6 +13,17 @@ const setDrawerOpen = (open) => {
   drawerOverlay?.toggleAttribute('hidden', !open);
   document.body.classList.toggle('drawer-open', open);
   menuButtons.forEach((button) => button.setAttribute('aria-expanded', String(open)));
+};
+
+const setSearchOverlayOpen = (open) => {
+  searchOverlay?.classList.toggle('open', open);
+  searchOverlay?.setAttribute('aria-hidden', String(!open));
+  document.body.classList.toggle('search-open', open);
+  searchButtons.forEach((button) => button.setAttribute('aria-expanded', String(open)));
+  if (open) {
+    setDrawerOpen(false);
+    window.setTimeout(() => searchOverlayInput?.focus(), 80);
+  }
 };
 
 const setTheme = (theme) => {
@@ -29,7 +41,10 @@ const setTheme = (theme) => {
 const initialTheme = document.documentElement.dataset.theme || 'light';
 setTheme(initialTheme);
 
-menuButtons.forEach((button) => button.addEventListener('click', () => setDrawerOpen(true)));
+menuButtons.forEach((button) => button.addEventListener('click', () => {
+  setSearchOverlayOpen(false);
+  setDrawerOpen(true);
+}));
 document.querySelectorAll('[data-close-menu]').forEach((button) => button.addEventListener('click', () => setDrawerOpen(false)));
 
 document.querySelectorAll('[data-drawer-toggle]').forEach((button) => {
@@ -50,16 +65,21 @@ themeButtons.forEach((button) => {
   });
 });
 
-searchButtons.forEach((button) => button.addEventListener('click', () => {
-  const open = !headerSearch?.classList.contains('open');
-  headerSearch?.classList.toggle('open', open);
-  button.setAttribute('aria-expanded', String(open));
-  if (open) headerSearchInput?.focus();
-}));
+searchButtons.forEach((button) => button.addEventListener('click', () => setSearchOverlayOpen(true)));
+document.querySelectorAll('[data-close-search]').forEach((button) => button.addEventListener('click', () => setSearchOverlayOpen(false)));
+
+searchForms.forEach((form) => {
+  form.addEventListener('submit', (event) => {
+    const input = form.querySelector('input[name="q"]');
+    if (!input?.value.trim()) {
+      event.preventDefault();
+      input?.focus();
+    }
+  });
+});
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   setDrawerOpen(false);
-  headerSearch?.classList.remove('open');
-  searchButtons.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+  setSearchOverlayOpen(false);
 });

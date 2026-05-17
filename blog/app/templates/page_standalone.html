@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>{{ post.title }} - {{ site_name }}</title>
+  <title>{{ title }} - {{ site_name }}</title>
   <script>
     (() => {
       const savedTheme = localStorage.getItem('homepage-theme');
@@ -150,26 +150,14 @@
   </aside>
 
   <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12">
-<article class="article-detail max-w-[920px] mx-auto">
-  {% if post.featured_image_url %}<img class="article-image w-full aspect-[16/10] object-cover rounded-sm mb-8 md:mb-10 bg-surface-container-low dark:bg-neutral-900" src="{{ post.featured_image_url }}" alt="{{ post.title }}">{% endif %}
-  <div class="max-w-[760px] mx-auto">
-    <p class="meta font-label-caps text-[10px] uppercase tracking-widest text-outline dark:text-neutral-600 mb-5">{{ post.category.name if post.category else 'Uncategorized' }} · {{ format_views(post.views_count) }} · {{ estimate_read_time(post.content) }} min read{% if post.published_at %} · Published {{ published_time_label(post.published_at) }}{% endif %}</p>
-    <h1 class="font-display-lg text-4xl md:text-6xl text-on-surface dark:text-white tracking-tight font-medium leading-[1.05] mb-5">{{ post.title }}</h1>
-    {% if post.summary %}<p class="summary font-body-md text-lg md:text-xl text-on-surface-variant dark:text-neutral-400 leading-relaxed mb-8">{{ post.summary }}</p>{% endif %}
-    <div class="content content-body font-body-md text-base md:text-lg leading-8 text-on-surface dark:text-neutral-100">{{ post.content | replace('\n', '<br>') | safe }}</div>
-    <div class="chips mt-10 flex flex-wrap gap-3">{% for tag in post.tags %}<a href="/tag/{{ tag.slug }}" class="font-label-caps text-[10px] uppercase text-on-surface dark:text-neutral-200 border border-surface-container-high dark:border-neutral-800 px-4 py-2 rounded-full hover:bg-surface-container-high dark:hover:bg-neutral-800 transition-colors tracking-widest">#{{ tag.name }}</a>{% endfor %}</div>
-  </div>
-</article>
-<section class="related mt-16 md:mt-24 border-t border-surface-container-high dark:border-neutral-800 pt-10 md:pt-14">
-  <div class="mb-8 flex items-center justify-between gap-4"><h2 class="font-label-caps text-[10px] text-on-surface-variant dark:text-neutral-400 uppercase tracking-widest">Related Posts</h2><a href="/posts" class="font-label-caps text-[10px] uppercase tracking-widest text-on-surface dark:text-white">All Posts</a></div>
-  <div class="post-grid grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-    {% for post in related_posts %}
-      {{ post_card(post) }}
-    {% else %}
-    <p class="empty-state font-body-md text-sm text-on-surface-variant dark:text-neutral-400">No related posts yet.</p>
-    {% endfor %}
-  </div>
+<section class="mb-10 md:mb-16 py-10 md:py-16 border-y border-surface-container-high dark:border-neutral-800">
+  <p class="font-label-caps text-[10px] uppercase tracking-[0.24em] text-outline dark:text-neutral-600 mb-4">Standalone page</p>
+  <h1 class="font-display-lg text-4xl md:text-6xl text-on-surface dark:text-white tracking-tight font-medium leading-[1.05] mb-5">{{ title }}</h1>
+  {% if page and page.updated_at %}<p class="font-label-caps text-[10px] uppercase tracking-widest text-outline dark:text-neutral-600">Updated {{ page.updated_at.strftime('%B %-d, %Y') if page.updated_at.strftime else page.updated_at }}</p>{% endif %}
 </section>
+<article class="content-card max-w-[860px] mx-auto border border-surface-container-high dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/30 p-6 md:p-10">
+  <div class="content content-body font-body-md text-base md:text-lg leading-8 text-on-surface dark:text-neutral-100">{{ content | replace('\n', '<br>') | safe }}</div>
+</article>
   </main>
 
   <footer class="bg-surface-container-lowest dark:bg-neutral-950 text-on-surface-variant dark:text-neutral-400 font-label-caps uppercase w-full border-t border-surface-container-high dark:border-neutral-800 transition-colors duration-300 mt-auto">

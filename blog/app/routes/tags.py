@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import create_templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,7 +11,7 @@ from app.services.setting_service import get_settings_map
 from app.services.tag_service import create_tag, update_tag
 
 router = APIRouter(prefix="/admin/tags")
-templates = Jinja2Templates(directory="app/templates")
+templates = create_templates()
 
 
 @router.get("")
@@ -28,10 +28,12 @@ def create(
     name: str = Form(...),
     show_in_menu: bool = Form(False),
     menu_order: int = Form(0),
+    show_on_home: bool = Form(False),
+    home_order: int = Form(0),
 ):
     require_admin(request, db)
     if name.strip():
-        create_tag(db, name, show_in_menu, menu_order)
+        create_tag(db, name, show_in_menu, menu_order, show_on_home, home_order)
     return RedirectResponse("/admin/tags", status_code=303)
 
 
@@ -43,11 +45,13 @@ def update(
     name: str = Form(...),
     show_in_menu: bool = Form(False),
     menu_order: int = Form(0),
+    show_on_home: bool = Form(False),
+    home_order: int = Form(0),
 ):
     require_admin(request, db)
     tag = db.get(Tag, tag_id)
     if tag and name.strip():
-        update_tag(db, tag, name, show_in_menu, menu_order)
+        update_tag(db, tag, name, show_in_menu, menu_order, show_on_home, home_order)
     return RedirectResponse("/admin/tags", status_code=303)
 
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import create_templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -8,9 +8,10 @@ from app.models.post import Post
 from app.routes.deps import require_admin
 from app.services.post_service import dashboard_counts
 from app.services.setting_service import get_settings_map
+from app.utils.formatting import format_count, format_views
 
 router = APIRouter(prefix="/admin")
-templates = Jinja2Templates(directory="app/templates")
+templates = create_templates()
 
 
 @router.get("")
@@ -26,5 +27,5 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
     recent_posts = db.scalars(select(Post).order_by(Post.created_at.desc()).limit(6)).all()
     return templates.TemplateResponse(
         "admin/dashboard.html",
-        {"request": request, "admin": admin, "counts": dashboard_counts(db), "recent_posts": recent_posts, "settings": get_settings_map(db)},
+        {"request": request, "admin": admin, "counts": dashboard_counts(db), "recent_posts": recent_posts, "settings": get_settings_map(db), "format_count": format_count, "format_views": format_views},
     )
